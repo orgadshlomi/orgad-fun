@@ -219,10 +219,31 @@ export function toISODate(date: Date): string {
   return date.toISOString().split('T')[0]
 }
 
+// Items that can be added any time of day — post-workout shake, snack boosts, etc.
+export const SUPPLEMENT_ITEMS = [
+  { id: 'protein_shake', name: 'שייק חלבון',       protein: 25, calories: 200, carbs: 5  },
+  { id: 'hard_egg',      name: 'ביצה קשה',          protein: 6,  calories: 78,  carbs: 0  },
+  { id: 'cottage',       name: "קוטג' 250g",        protein: 28, calories: 210, carbs: 6  },
+  { id: 'greek_yogurt',  name: 'יוגורט יווני 200g', protein: 20, calories: 160, carbs: 8  },
+  { id: 'tuna_can',      name: 'שימורי טונה 160g',  protein: 32, calories: 160, carbs: 0  },
+]
+
+export function calcSupplementNutrition(items: Record<string, number>) {
+  let protein = 0, calories = 0, carbs = 0
+  for (const item of SUPPLEMENT_ITEMS) {
+    const qty = items[item.id] ?? 0
+    protein += item.protein * qty
+    calories += item.calories * qty
+    carbs += item.carbs * qty
+  }
+  return { protein, calories, carbs }
+}
+
 export function calcNutrition(
   breakfastItems: Record<string, number> | null,
   lunchId: string | null,
   dinnerId: string | null,
+  supplementItems?: Record<string, number> | null,
 ) {
   const b = breakfastItems ? calcBreakfastNutrition(breakfastItems) : { protein: 0, calories: 0, carbs: 0 }
   let protein = b.protein
@@ -236,6 +257,10 @@ export function calcNutrition(
   if (dinnerId && dinnerId !== 'custom') {
     const d = DINNER_OPTIONS.find(o => o.id === dinnerId)
     if (d) { protein += d.protein; calories += d.calories; carbs += d.carbs }
+  }
+  if (supplementItems) {
+    const s = calcSupplementNutrition(supplementItems)
+    protein += s.protein; calories += s.calories; carbs += s.carbs
   }
 
   return { protein, calories, carbs }

@@ -6,6 +6,7 @@ import {
   getDayInfo,
   BREAKFAST_ITEMS,
   DEFAULT_BREAKFAST_ITEMS,
+  SUPPLEMENT_ITEMS,
   LUNCH_OPTIONS,
   DINNER_OPTIONS,
   calcNutrition,
@@ -44,6 +45,7 @@ export default function LogPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [breakfastItems, setBreakfastItems] = useState<Record<string, number>>({ ...DEFAULT_BREAKFAST_ITEMS })
+  const [supplementItems, setSupplementItems] = useState<Record<string, number>>({})
   const [form, setForm] = useState({
     date: toISODate(new Date()),
     weight_kg: '',
@@ -54,6 +56,8 @@ export default function LogPage() {
     snacks: '',
     workout_done: false,
     workout_type: dayInfo.workoutType,
+    workout_duration: '45',
+    workout_notes: '',
     notes: '',
   })
 
@@ -88,6 +92,7 @@ export default function LogPage() {
     breakfastItems,
     form.lunch_option || null,
     form.dinner_option || null,
+    supplementItems,
   )
 
   const proteinPct = Math.min(100, Math.round((protein / dayInfo.proteinTarget) * 100))
@@ -96,11 +101,19 @@ export default function LogPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
+    const workoutLine = form.workout_done && (form.workout_duration || form.workout_notes)
+      ? `🏃 אימון: ${form.workout_duration ? form.workout_duration + ' דקות' : ''}${form.workout_notes ? ' — ' + form.workout_notes : ''}`
+      : null
     const customNotes = [
+      workoutLine,
       form.lunch_option === 'custom' && form.lunch_custom && `🍽️ צהריים: ${form.lunch_custom}`,
       form.dinner_option === 'custom' && form.dinner_custom && `🌙 ערב: ${form.dinner_custom}`,
       form.notes,
     ].filter(Boolean).join('\n')
+    const supplementText = SUPPLEMENT_ITEMS
+      .filter(i => (supplementItems[i.id] ?? 0) > 0)
+      .map(i => `${i.name}${supplementItems[i.id] > 1 ? ` ×${supplementItems[i.id]}` : ''}`)
+      .join(', ')
     try {
       await fetch('/api/fitness/log', {
         method: 'POST',
@@ -109,6 +122,7 @@ export default function LogPage() {
           ...form,
           breakfast_type: JSON.stringify(breakfastItems),
           weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : null,
+          snacks: [form.snacks, supplementText].filter(Boolean).join(' | '),
           protein_g: protein,
           calories_kcal: calories,
           carbs_g: carbs,
@@ -351,8 +365,47 @@ export default function LogPage() {
         )}
       </Section>
 
+      {/* Supplements */}
+      <Section title="💊 תוספות וחטיפי חלבון" subtitle="לחץ להוסיף — נספרים בסיכום היומי">
+        <div className="flex flex-wrap gap-2">
+          {SUPPLEMENT_ITEMS.map(item => {
+            const qty = supplementItems[item.id] ?? 0
+            const active = qty > 0
+            return (
+              <div key={item.id} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 transition-all ${
+                active ? 'border-emerald-500 bg-emerald-50' : 'border-gray-100 bg-white'
+              }`}>
+                <button
+                  type="button"
+                  onClick={() => setSupplementItems(prev => ({ ...prev, [item.id]: active ? 0 : 1 }))}
+                  className="flex flex-col items-start"
+                >
+                  <span className={`text-sm font-medium leading-tight ${active ? 'text-emerald-800' : 'text-gray-600'}`}>
+                    {item.name}
+                  </span>
+                  <span className={`text-xs ${active ? 'text-emerald-600' : 'text-gray-400'}`}>
+                    {item.protein}g חלב' · {item.calories} קק"ל
+                  </span>
+                </button>
+                {active && (
+                  <div className="flex items-center gap-1 mr-1">
+                    <button type="button"
+                      onClick={() => setSupplementItems(prev => ({ ...prev, [item.id]: Math.max(0, qty - 1) }))}
+                      className="w-6 h-6 rounded-full bg-gray-200 text-gray-700 text-sm font-bold flex items-center justify-center">−</button>
+                    <span className="text-sm font-bold text-gray-900 w-4 text-center">{qty}</span>
+                    <button type="button"
+                      onClick={() => setSupplementItems(prev => ({ ...prev, [item.id]: qty + 1 }))}
+                      className="w-6 h-6 rounded-full bg-gray-200 text-gray-700 text-sm font-bold flex items-center justify-center">+</button>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </Section>
+
       {/* Workout */}
-      <Section title="🏃 אימון">
+      <Section title="🏋️ אימון">
         <label className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
           form.workout_done ? 'border-emerald-500 bg-emerald-50' : 'border-gray-100'
         }`}>
@@ -363,22 +416,56 @@ export default function LogPage() {
           </div>
           <input type="checkbox" checked={form.workout_done}
             onChange={e => set('workout_done', e.target.checked)} className="sr-only" />
-          <span className={`text-sm font-medium ${form.workout_done ? 'text-emerald-700' : 'text-gray-600'}`}>
-            {dayInfo.workout}
-          </span>
+          <div>
+            <p className={`text-sm font-medium ${form.workout_done ? 'text-emerald-700' : 'text-gray-600'}`}>
+              {form.workout_done ? 'אימון בוצע ✅' : 'סמן אם עשית אימון היום'}
+            </p>
+            {!form.workout_done && (
+              <p className="text-xs text-gray-400 mt-0.5">מתוכנן: {dayInfo.workout}</p>
+            )}
+          </div>
         </label>
+
         {form.workout_done && (
-          <div className="mt-3">
-            <select
-              value={form.workout_type}
-              onChange={e => set('workout_type', e.target.value)}
-              className="w-full border-2 border-gray-100 rounded-xl px-3 py-2.5 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-            >
-              <option value="gym_a">ג'ים A — רגליים + גב</option>
-              <option value="gym_b">ג'ים B — חזה + כתפיים + טריצפס</option>
-              <option value="swimming">שחייה</option>
-              <option value="calisthenics">כושר גופני (Calisthenics)</option>
-            </select>
+          <div className="mt-3 space-y-3">
+            {/* Type + Duration row */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-gray-500 font-medium mb-1 block">סוג אימון</label>
+                <select
+                  value={form.workout_type}
+                  onChange={e => set('workout_type', e.target.value)}
+                  className="w-full border-2 border-gray-100 rounded-xl px-3 py-2 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                >
+                  <option value="gym_a">ג&apos;ים A — רגליים + גב</option>
+                  <option value="gym_b">ג&apos;ים B — חזה + כתפיים</option>
+                  <option value="gym_mixed">ג&apos;ים — מעורב / אחר</option>
+                  <option value="swimming">שחייה</option>
+                  <option value="calisthenics">כושר גופני</option>
+                  <option value="walking">הליכה</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 font-medium mb-1 block">משך (דקות)</label>
+                <select
+                  value={form.workout_duration}
+                  onChange={e => set('workout_duration', e.target.value)}
+                  className="w-full border-2 border-gray-100 rounded-xl px-3 py-2 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                >
+                  {['20','30','40','45','50','60','75','90'].map(d => (
+                    <option key={d} value={d}>{d} דקות</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            {/* Free notes */}
+            <input
+              type="text"
+              placeholder="מה עשית? לדוגמה: סקוואט, בנץ', כתפיים, בטן..."
+              value={form.workout_notes}
+              onChange={e => set('workout_notes', e.target.value)}
+              className="w-full border-2 border-gray-100 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+            />
           </div>
         )}
       </Section>
