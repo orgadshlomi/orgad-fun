@@ -16,8 +16,7 @@ function verifySlackSignature(body: string, timestamp: string, signature: string
   if (!secret) return false
   const baseString = `v0:${timestamp}:${body}`
   const hmac = createHmac('sha256', secret).update(baseString).digest('hex')
-  const expected = `v0=${hmac}`
-  return expected === signature
+  return `v0=${hmac}` === signature
 }
 
 type ParsedMeal = {
@@ -28,42 +27,51 @@ type ParsedMeal = {
   workout_type?: string
   weight_kg?: number
   notes?: string
+  is_food_message?: boolean
+}
+
+function extractJson(text: string): string {
+  // Strip markdown code fences if present
+  const match = text.match(/```(?:json)?\s*([\s\S]*?)```/)
+  if (match) return match[1].trim()
+  return text.trim()
 }
 
 async function parseMessage(text: string, date: string): Promise<ParsedMeal> {
+  // Strip Slack mention tags like <@U123ABC>
+  const cleanText = text.replace(/<@[A-Z0-9]+>/g, '').trim()
+
   const msg = await getAnthropic().messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 512,
-    system: `You are a fitness tracker assistant. The user will send Hebrew or English messages describing what they ate, their workout, or weight.
-Extract nutritional data and return ONLY valid JSON with these optional fields:
-- protein_g: number (grams of protein)
+    system: `You are a fitness tracker. Parse Hebrew or English messages about food eaten, workouts done, or weight.
+
+If the message is NOT about food/workout/weight (e.g. a question or greeting), return: {"is_food_message": false}
+
+Otherwise extract and return JSON with these fields (only include what's mentioned):
+- is_food_message: true
+- protein_g: number (total protein in grams)
 - calories_kcal: number (total calories)
-- carbs_g: number (grams of carbs)
+- carbs_g: number (total carbs in grams)
 - workout_done: boolean
-- workout_type: one of "gym_a", "gym_b", "swimming", "calisthenics", "rest"
+- workout_type: "gym_a" | "gym_b" | "swimming" | "calisthenics" | "rest"
 - weight_kg: number
-- notes: string (raw food description in Hebrew)
+- notes: string (original description)
 
-Nutrition estimates for common foods:
-- ביצת עין / fried egg: protein 6g, calories 90, carbs 0
-- אבוקדו חצי / half avocado: protein 2g, calories 120, carbs 6
-- שייק חלבון / protein shake: protein 25g, calories 200, carbs 15
-- חזה עוף 100g: protein 31g, calories 165, carbs 0
-- קוטג' 250g: protein 28g, calories 210, carbs 8
-- יוגורט יווני 200g: protein 20g, calories 160, carbs 8
-- לחם פרוסה / bread slice: protein 3g, calories 80, carbs 15
-- אורז 100g: protein 3g, calories 130, carbs 28
-- סלמון 150g: protein 30g, calories 260, carbs 0
-- גבינה צהובה פרוסה: protein 7g, calories 80, carbs 0
+Reference values per item:
+ביצת עין: 6g protein, 90kcal | חצי אבוקדו: 2g, 120kcal | שייק חלבון: 25g, 200kcal
+חזה עוף 100g: 31g, 165kcal | קוטג' 250g: 28g, 210kcal | יוגורט יווני 200g: 20g, 160kcal
+פרוסת לחם: 3g, 80kcal | אורז 100g: 3g, 130kcal | סלמון 150g: 30g, 260kcal
+כפית סוכר בקפה: 0g protein, 16kcal | קפה שחור: 0g, 5kcal
 
-Return ONLY JSON, no explanation.`,
-    messages: [{ role: 'user', content: `Date: ${date}\nMessage: ${text}` }],
+Return ONLY the JSON object, nothing else.`,
+    messages: [{ role: 'user', content: `Date: ${date}\n${cleanText}` }],
   })
 
   const content = msg.content[0]
   if (content.type !== 'text') return {}
   try {
-    return JSON.parse(content.text.trim())
+    return JSON.parse(extractJson(content.text))
   } catch {
     return {}
   }
@@ -83,15 +91,14 @@ export async function POST(req: Request) {
   const rawBody = await req.text()
   const timestamp = req.headers.get('x-slack-request-timestamp') ?? ''
   const signature = req.headers.get('x-slack-signature') ?? ''
+  const retryNum = req.headers.get('x-slack-retry-num')
 
-  // Allow missing secrets in dev
   if (process.env.SLACK_SIGNING_SECRET && !verifySlackSignature(rawBody, timestamp, signature)) {
     return new Response('Unauthorized', { status: 401 })
   }
 
   const payload = JSON.parse(rawBody)
 
-  // Slack URL verification challenge
   if (payload.type === 'url_verification') {
     return Response.json({ challenge: payload.challenge })
   }
@@ -100,8 +107,12 @@ export async function POST(req: Request) {
     return new Response('OK')
   }
 
+  // Ignore Slack retries — they mean we're processing too slowly
+  if (retryNum && retryNum !== '0') {
+    return new Response('OK')
+  }
+
   const event = payload.event
-  // Only handle regular messages, not bot messages
   if (event.type !== 'message' || event.bot_id || event.subtype) {
     return new Response('OK')
   }
@@ -111,12 +122,14 @@ export async function POST(req: Request) {
   const today = new Date().toISOString().split('T')[0]
 
   const parsed = await parseMessage(text, today)
-  if (Object.keys(parsed).length === 0) {
-    await sendSlackReply(channel, '🤔 לא הצלחתי לפרש את ההודעה. נסה שוב עם תיאור של מה אכלת או האימון שעשית.')
+
+  if (!parsed.is_food_message || Object.keys(parsed).length <= 1) {
+    await sendSlackReply(channel,
+      '💬 כדי לעדכן את הטראקר, שלח תיאור של מה אכלת.\nלמשל: _"אכלתי 2 ביצי עין, חצי אבוקדו וקפה שחור"_'
+    )
     return new Response('OK')
   }
 
-  // Get today's existing log
   const { data: existing } = await supabase
     .from('fitness_daily_logs')
     .select('*')
