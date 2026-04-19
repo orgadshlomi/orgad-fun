@@ -4,14 +4,12 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   getDayInfo,
-  BREAKFAST_ITEMS,
+  FOOD_ITEMS,
   DEFAULT_BREAKFAST_ITEMS,
-  SUPPLEMENT_ITEMS,
-  LUNCH_OPTIONS,
-  DINNER_OPTIONS,
-  calcNutrition,
+  calcFoodNutrition,
   toISODate,
 } from '@/lib/fitness-logic'
+import type { FoodItem } from '@/lib/fitness-logic'
 import type { DailyLog } from '@/lib/supabase'
 
 function Section({ title, subtitle, action, children }: {
@@ -34,25 +32,89 @@ function Section({ title, subtitle, action, children }: {
   )
 }
 
+function FoodChecklist({ items, values, onChange, customValue, onCustomChange }: {
+  items: FoodItem[]
+  values: Record<string, number>
+  onChange: (v: Record<string, number>) => void
+  customValue: string
+  onCustomChange: (v: string) => void
+}) {
+  return (
+    <div className="space-y-1.5">
+      {items.map(item => {
+        const qty = values[item.id] ?? 0
+        const checked = qty > 0
+        const toggle = () => onChange({ ...values, [item.id]: checked ? 0 : item.defaultQty })
+        return (
+          <div
+            key={item.id}
+            className={`flex items-center gap-3 p-2.5 rounded-xl border-2 transition-all ${
+              checked ? 'border-gray-900 bg-gray-50' : 'border-gray-100'
+            }`}
+          >
+            <button
+              type="button"
+              onClick={toggle}
+              className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                checked ? 'border-gray-900 bg-gray-900' : 'border-gray-300'
+              }`}
+            >
+              {checked && <span className="text-white text-[10px] font-bold leading-none">✓</span>}
+            </button>
+            <button type="button" onClick={toggle} className="flex-1 text-right">
+              <span className={`text-sm font-medium ${checked ? 'text-gray-900' : 'text-gray-500'}`}>
+                {item.name}
+              </span>
+            </button>
+            {checked ? (
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...values, [item.id]: Math.max(0, qty - 1) })}
+                  className="w-7 h-7 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-base font-bold flex items-center justify-center leading-none"
+                >−</button>
+                <span className="text-sm font-bold text-gray-900 w-5 text-center tabular-nums">{qty}</span>
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...values, [item.id]: qty + 1 })}
+                  className="w-7 h-7 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-base font-bold flex items-center justify-center leading-none"
+                >+</button>
+                <span className="text-xs text-emerald-600 font-medium min-w-[52px] text-left">
+                  {item.protein * qty}g חלב&apos;
+                </span>
+              </div>
+            ) : (
+              <span className="text-xs text-gray-300">{item.protein}g · {item.calories} קק&quot;ל</span>
+            )}
+          </div>
+        )
+      })}
+      <input
+        type="text"
+        placeholder="אחר... (קרואסון, פיצה, וכו׳)"
+        value={customValue}
+        onChange={e => onCustomChange(e.target.value)}
+        className="w-full border-2 border-dashed border-gray-200 rounded-xl px-3 py-2 text-right text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent placeholder:text-gray-300 mt-1"
+      />
+    </div>
+  )
+}
+
 export default function LogPage() {
   const router = useRouter()
   const dayInfo = getDayInfo()
-  const hasCarbs = dayInfo.dayType === 'high_carb' || dayInfo.dayType === 'medium_carb'
-  const lunchSuggestions = hasCarbs
-    ? LUNCH_OPTIONS.filter(l => l.id.endsWith('_carbs'))
-    : LUNCH_OPTIONS.filter(l => l.id.endsWith('_no'))
 
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [breakfastItems, setBreakfastItems] = useState<Record<string, number>>({ ...DEFAULT_BREAKFAST_ITEMS })
-  const [supplementItems, setSupplementItems] = useState<Record<string, number>>({})
+  const [breakfastCustom, setBreakfastCustom] = useState('')
+  const [lunchItems, setLunchItems] = useState<Record<string, number>>({})
+  const [lunchCustom, setLunchCustom] = useState('')
+  const [dinnerItems, setDinnerItems] = useState<Record<string, number>>({})
+  const [dinnerCustom, setDinnerCustom] = useState('')
   const [form, setForm] = useState({
     date: toISODate(new Date()),
     weight_kg: '',
-    lunch_option: lunchSuggestions[0]?.id ?? '',
-    lunch_custom: '',
-    dinner_option: '',
-    dinner_custom: '',
     snacks: '',
     workout_done: false,
     workout_type: dayInfo.workoutType,
@@ -67,33 +129,31 @@ export default function LogPage() {
       .then(({ log }: { log: DailyLog | null }) => {
         if (!log) return
         if (log.breakfast_type) {
-          try {
-            const parsed = JSON.parse(log.breakfast_type)
-            if (typeof parsed === 'object') setBreakfastItems(parsed)
-          } catch {
-            // legacy string id — ignore, keep defaults
-          }
+          try { const p = JSON.parse(log.breakfast_type); if (typeof p === 'object') setBreakfastItems(p) } catch {}
+        }
+        if (log.lunch_option) {
+          try { const p = JSON.parse(log.lunch_option); if (typeof p === 'object') setLunchItems(p) } catch {}
+        }
+        if (log.dinner_option) {
+          try { const p = JSON.parse(log.dinner_option); if (typeof p === 'object') setDinnerItems(p) } catch {}
         }
         setForm(f => ({
           ...f,
           weight_kg: log.weight_kg?.toString() ?? '',
-          lunch_option: log.lunch_option ?? lunchSuggestions[0]?.id ?? '',
-          dinner_option: log.dinner_option ?? '',
           snacks: log.snacks ?? '',
           workout_done: log.workout_done,
           workout_type: log.workout_type ?? dayInfo.workoutType,
-          // Strip auto-generated meal prefix lines so they don't accumulate across saves
           notes: (log.notes ?? '').split('\n').filter(l => !l.match(/^[🍳🍽️🌙]/u)).join('\n').trim(),
         }))
       })
   }, [])
 
-  const { protein, calories, carbs } = calcNutrition(
-    breakfastItems,
-    form.lunch_option || null,
-    form.dinner_option || null,
-    supplementItems,
-  )
+  const b = calcFoodNutrition(breakfastItems)
+  const l = calcFoodNutrition(lunchItems)
+  const d = calcFoodNutrition(dinnerItems)
+  const protein = b.protein + l.protein + d.protein
+  const calories = b.calories + l.calories + d.calories
+  const carbs = b.carbs + l.carbs + d.carbs
 
   const proteinPct = Math.min(100, Math.round((protein / dayInfo.proteinTarget) * 100))
   const calPct = Math.min(100, Math.round((calories / dayInfo.calTarget) * 100))
@@ -106,14 +166,11 @@ export default function LogPage() {
       : null
     const customNotes = [
       workoutLine,
-      form.lunch_option === 'custom' && form.lunch_custom && `🍽️ צהריים: ${form.lunch_custom}`,
-      form.dinner_option === 'custom' && form.dinner_custom && `🌙 ערב: ${form.dinner_custom}`,
+      breakfastCustom && `🍳 בוקר: ${breakfastCustom}`,
+      lunchCustom && `🍽️ צהריים: ${lunchCustom}`,
+      dinnerCustom && `🌙 ערב: ${dinnerCustom}`,
       form.notes,
     ].filter(Boolean).join('\n')
-    const supplementText = SUPPLEMENT_ITEMS
-      .filter(i => (supplementItems[i.id] ?? 0) > 0)
-      .map(i => `${i.name}${supplementItems[i.id] > 1 ? ` ×${supplementItems[i.id]}` : ''}`)
-      .join(', ')
     try {
       await fetch('/api/fitness/log', {
         method: 'POST',
@@ -121,8 +178,9 @@ export default function LogPage() {
         body: JSON.stringify({
           ...form,
           breakfast_type: JSON.stringify(breakfastItems),
+          lunch_option: JSON.stringify(lunchItems),
+          dinner_option: JSON.stringify(dinnerItems),
           weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : null,
-          snacks: [form.snacks, supplementText].filter(Boolean).join(' | '),
           protein_g: protein,
           calories_kcal: calories,
           carbs_g: carbs,
@@ -168,7 +226,6 @@ export default function LogPage() {
             <p className="text-xs text-gray-500">מתוך {dayInfo.carbTarget}g</p>
           </div>
         </div>
-        {/* Progress bars */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
             <div className="flex-1 bg-gray-700 rounded-full h-2">
@@ -206,7 +263,6 @@ export default function LogPage() {
       {/* Breakfast */}
       <Section
         title="🥣 ארוחת בוקר"
-        subtitle="סמן כל מה שאכלת — כמות ברירת מחדל: 2 ביצים, חצי אבוקדו, קפה"
         action={
           <button
             type="button"
@@ -217,191 +273,35 @@ export default function LogPage() {
           </button>
         }
       >
-        <div className="space-y-1.5">
-          {BREAKFAST_ITEMS.map(item => {
-            const qty = breakfastItems[item.id] ?? 0
-            const checked = qty > 0
-            const toggle = () => setBreakfastItems(prev => ({
-              ...prev,
-              [item.id]: checked ? 0 : item.defaultQty,
-            }))
-            return (
-              <div
-                key={item.id}
-                className={`flex items-center gap-3 p-2.5 rounded-xl border-2 transition-all ${
-                  checked ? 'border-gray-900 bg-gray-50' : 'border-gray-100'
-                }`}
-              >
-                {/* Checkbox */}
-                <button
-                  type="button"
-                  onClick={toggle}
-                  className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                    checked ? 'border-gray-900 bg-gray-900' : 'border-gray-300'
-                  }`}
-                >
-                  {checked && <span className="text-white text-[10px] font-bold leading-none">✓</span>}
-                </button>
-
-                {/* Name */}
-                <button type="button" onClick={toggle} className="flex-1 text-right">
-                  <span className={`text-sm font-medium ${checked ? 'text-gray-900' : 'text-gray-500'}`}>
-                    {item.name}
-                  </span>
-                </button>
-
-                {/* Nutrition or qty controls */}
-                {checked ? (
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setBreakfastItems(prev => ({ ...prev, [item.id]: Math.max(0, qty - 1) }))}
-                      className="w-7 h-7 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-base font-bold flex items-center justify-center leading-none"
-                    >−</button>
-                    <span className="text-sm font-bold text-gray-900 w-5 text-center tabular-nums">{qty}</span>
-                    <button
-                      type="button"
-                      onClick={() => setBreakfastItems(prev => ({ ...prev, [item.id]: qty + 1 }))}
-                      className="w-7 h-7 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-base font-bold flex items-center justify-center leading-none"
-                    >+</button>
-                    <span className="text-xs text-emerald-600 font-medium min-w-[52px] text-left">
-                      {item.protein * qty}g חלב'
-                    </span>
-                  </div>
-                ) : (
-                  <span className="text-xs text-gray-300">{item.protein}g · {item.calories} קק"ל</span>
-                )}
-              </div>
-            )
-          })}
-        </div>
+        <FoodChecklist
+          items={FOOD_ITEMS}
+          values={breakfastItems}
+          onChange={setBreakfastItems}
+          customValue={breakfastCustom}
+          onCustomChange={setBreakfastCustom}
+        />
       </Section>
 
       {/* Lunch */}
       <Section title="🍽️ צהריים">
-        <div className="flex items-center justify-between mb-3">
-          <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${dayInfo.bgClass} ${dayInfo.colorClass}`}>
-            {hasCarbs ? '🌾 High Carb — עם פחמימות' : '🥗 Low Carb — ללא פחמימות'}
-          </span>
-        </div>
-        <select
-          value={form.lunch_option}
-          onChange={e => set('lunch_option', e.target.value)}
-          className="w-full border-2 border-gray-100 rounded-xl px-3 py-2.5 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-        >
-          <option value="">בחר ארוחת צהריים</option>
-          <optgroup label="מומלץ להיום">
-            {lunchSuggestions.map(o => (
-              <option key={o.id} value={o.id}>{o.name} ({o.protein}g · {o.calories} קק"ל)</option>
-            ))}
-          </optgroup>
-          <optgroup label="כל האפשרויות">
-            {LUNCH_OPTIONS.filter(o => !lunchSuggestions.includes(o)).map(o => (
-              <option key={o.id} value={o.id}>{o.name} ({o.protein}g · {o.calories} קק"ל)</option>
-            ))}
-          </optgroup>
-          <option value="custom">אחר — הקלד בחופשי...</option>
-        </select>
-        {form.lunch_option === 'custom' && (
-          <input
-            type="text"
-            placeholder="תאר את ארוחת הצהריים..."
-            value={form.lunch_custom}
-            onChange={e => set('lunch_custom', e.target.value)}
-            className="mt-3 w-full border-2 border-gray-900 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-            autoFocus
-          />
-        )}
-      </Section>
-
-      {/* Snacks */}
-      <Section title="🥜 חטיפים" subtitle="ביצים קשות, קוטג', פירות, אגוזים...">
-        <input
-          type="text"
-          placeholder="קוטג' 250g, 2 ביצים קשות..."
-          value={form.snacks}
-          onChange={e => set('snacks', e.target.value)}
-          className="w-full border-2 border-gray-100 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+        <FoodChecklist
+          items={FOOD_ITEMS}
+          values={lunchItems}
+          onChange={setLunchItems}
+          customValue={lunchCustom}
+          onCustomChange={setLunchCustom}
         />
       </Section>
 
       {/* Dinner */}
       <Section title="🌙 ארוחת ערב">
-        <div className="space-y-2">
-          {DINNER_OPTIONS.map(opt => (
-            <label
-              key={opt.id}
-              className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                form.dinner_option === opt.id
-                  ? 'border-gray-900 bg-gray-50'
-                  : 'border-gray-100 hover:border-gray-200'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                  form.dinner_option === opt.id ? 'border-gray-900' : 'border-gray-300'
-                }`}>
-                  {form.dinner_option === opt.id && <div className="w-2 h-2 rounded-full bg-gray-900" />}
-                </div>
-                <input type="radio" name="dinner" value={opt.id} checked={form.dinner_option === opt.id}
-                  onChange={() => set('dinner_option', opt.id)} className="sr-only" />
-                <span className="text-sm text-gray-900 font-medium">{opt.name}</span>
-              </div>
-              {opt.id !== 'custom' && (
-                <span className="text-xs text-gray-400 font-medium">{opt.protein}g · {opt.calories} קק"ל</span>
-              )}
-            </label>
-          ))}
-        </div>
-        {form.dinner_option === 'custom' && (
-          <input
-            type="text"
-            placeholder="תאר את ארוחת הערב..."
-            value={form.dinner_custom}
-            onChange={e => set('dinner_custom', e.target.value)}
-            className="mt-3 w-full border-2 border-gray-900 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-            autoFocus
-          />
-        )}
-      </Section>
-
-      {/* Supplements */}
-      <Section title="💊 תוספות וחטיפי חלבון" subtitle="לחץ להוסיף — נספרים בסיכום היומי">
-        <div className="flex flex-wrap gap-2">
-          {SUPPLEMENT_ITEMS.map(item => {
-            const qty = supplementItems[item.id] ?? 0
-            const active = qty > 0
-            return (
-              <div key={item.id} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 transition-all ${
-                active ? 'border-emerald-500 bg-emerald-50' : 'border-gray-100 bg-white'
-              }`}>
-                <button
-                  type="button"
-                  onClick={() => setSupplementItems(prev => ({ ...prev, [item.id]: active ? 0 : 1 }))}
-                  className="flex flex-col items-start"
-                >
-                  <span className={`text-sm font-medium leading-tight ${active ? 'text-emerald-800' : 'text-gray-600'}`}>
-                    {item.name}
-                  </span>
-                  <span className={`text-xs ${active ? 'text-emerald-600' : 'text-gray-400'}`}>
-                    {item.protein}g חלב' · {item.calories} קק"ל
-                  </span>
-                </button>
-                {active && (
-                  <div className="flex items-center gap-1 mr-1">
-                    <button type="button"
-                      onClick={() => setSupplementItems(prev => ({ ...prev, [item.id]: Math.max(0, qty - 1) }))}
-                      className="w-6 h-6 rounded-full bg-gray-200 text-gray-700 text-sm font-bold flex items-center justify-center">−</button>
-                    <span className="text-sm font-bold text-gray-900 w-4 text-center">{qty}</span>
-                    <button type="button"
-                      onClick={() => setSupplementItems(prev => ({ ...prev, [item.id]: qty + 1 }))}
-                      className="w-6 h-6 rounded-full bg-gray-200 text-gray-700 text-sm font-bold flex items-center justify-center">+</button>
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
+        <FoodChecklist
+          items={FOOD_ITEMS}
+          values={dinnerItems}
+          onChange={setDinnerItems}
+          customValue={dinnerCustom}
+          onCustomChange={setDinnerCustom}
+        />
       </Section>
 
       {/* Workout */}
@@ -428,7 +328,6 @@ export default function LogPage() {
 
         {form.workout_done && (
           <div className="mt-3 space-y-3">
-            {/* Type + Duration row */}
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-xs text-gray-500 font-medium mb-1 block">סוג אימון</label>
@@ -458,7 +357,6 @@ export default function LogPage() {
                 </select>
               </div>
             </div>
-            {/* Free notes */}
             <input
               type="text"
               placeholder="מה עשית? לדוגמה: סקוואט, בנץ', כתפיים, בטן..."

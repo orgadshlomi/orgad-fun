@@ -9,9 +9,7 @@ import {
   PROTEIN_CHECKPOINTS,
   PLAN_START_WEIGHT,
   PLAN_TARGET_WEIGHT,
-  BREAKFAST_ITEMS,
-  LUNCH_OPTIONS,
-  DINNER_OPTIONS,
+  FOOD_ITEMS,
 } from '@/lib/fitness-logic'
 import type { DailyLog } from '@/lib/supabase'
 
@@ -123,23 +121,19 @@ export default function FitnessDashboard() {
   const calories = log?.calories_kcal ?? 0
   const carbs = log?.carbs_g ?? 0
 
-  const breakfastName = log?.breakfast_type
-    ? (() => {
-        try {
-          const items: Record<string, number> = JSON.parse(log.breakfast_type)
-          return BREAKFAST_ITEMS
-            .filter(i => (items[i.id] ?? 0) > 0)
-            .map(i => items[i.id] > 1 ? `${items[i.id]}× ${i.name}` : i.name)
-            .join(', ')
-        } catch { return null }
-      })()
-    : null
-  const lunchName = log?.lunch_option
-    ? LUNCH_OPTIONS.find(l => l.id === log.lunch_option)?.name
-    : null
-  const dinnerName = log?.dinner_option
-    ? DINNER_OPTIONS.find(d => d.id === log.dinner_option)?.name
-    : null
+  const parseMealName = (json: string | null | undefined) => {
+    if (!json) return null
+    try {
+      const items: Record<string, number> = JSON.parse(json)
+      return FOOD_ITEMS
+        .filter(i => (items[i.id] ?? 0) > 0)
+        .map(i => items[i.id] > 1 ? `${items[i.id]}× ${i.name}` : i.name)
+        .join(', ') || null
+    } catch { return null }
+  }
+  const breakfastName = parseMealName(log?.breakfast_type)
+  const lunchName = parseMealName(log?.lunch_option)
+  const dinnerName = parseMealName(log?.dinner_option)
 
   return (
     <div className="space-y-4">
