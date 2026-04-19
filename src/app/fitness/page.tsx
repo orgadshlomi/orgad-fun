@@ -23,25 +23,30 @@ function MacroRow({
   proteinTarget: number; calTarget: number; carbTarget: number
 }) {
   const items = [
-    { label: 'חלבון', value: protein, target: proteinTarget, unit: 'g', color: 'bg-emerald-500', trackColor: 'bg-emerald-100' },
-    { label: 'קלוריות', value: calories, target: calTarget, unit: '', color: 'bg-orange-400', trackColor: 'bg-orange-100' },
-    { label: 'פחמימות', value: carbs, target: carbTarget, unit: 'g', color: 'bg-blue-400', trackColor: 'bg-blue-100' },
+    { label: 'חלבון', value: protein, target: proteinTarget, unit: 'g', color: 'bg-emerald-500', trackColor: 'bg-emerald-100', textColor: 'text-emerald-600' },
+    { label: 'קלוריות', value: calories, target: calTarget, unit: '', color: 'bg-orange-400', trackColor: 'bg-orange-100', textColor: 'text-orange-500' },
+    { label: 'פחמימות', value: carbs, target: carbTarget, unit: 'g', color: 'bg-blue-400', trackColor: 'bg-blue-100', textColor: 'text-blue-500' },
   ]
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
       <div className="grid grid-cols-3 gap-4">
-        {items.map(({ label, value, target, unit, color, trackColor }) => {
+        {items.map(({ label, value, target, unit, color, trackColor, textColor }) => {
           const pct = Math.min(100, Math.round((value / target) * 100))
+          const remaining = target - value
           return (
             <div key={label} className="space-y-2">
               <div className="text-center">
-                <p className="text-xl font-bold text-gray-900 tabular-nums">{value}<span className="text-xs font-normal text-gray-400 ml-0.5">{unit}</span></p>
-                <p className="text-xs text-gray-500">{label}</p>
+                <p className="text-xl font-bold text-gray-900 tabular-nums">
+                  {value}<span className="text-xs font-normal text-gray-400">{unit}</span>
+                </p>
+                <p className="text-xs text-gray-400">מתוך {target}{unit}</p>
               </div>
-              <div className={`w-full ${trackColor} rounded-full h-2`}>
-                <div className={`h-2 rounded-full ${color} transition-all duration-700`} style={{ width: `${pct}%` }} />
+              <div className={`w-full ${trackColor} rounded-full h-2.5`}>
+                <div className={`h-2.5 rounded-full ${color} transition-all duration-700`} style={{ width: `${pct}%` }} />
               </div>
-              <p className="text-center text-xs text-gray-400">{pct}%</p>
+              <p className={`text-center text-xs font-medium ${remaining > 0 ? textColor : 'text-emerald-600'}`}>
+                {remaining > 0 ? `נשאר ${remaining}${unit}` : '✓ הושג'}
+              </p>
             </div>
           )
         })}
@@ -201,39 +206,38 @@ export default function FitnessDashboard() {
       )}
 
       {/* Today's meals */}
-      {log && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-gray-50">
-            <h2 className="font-semibold text-gray-900 text-sm">🍽️ ארוחות היום</h2>
-          </div>
-          <div className="divide-y divide-gray-50">
-            {[
-              { label: 'בוקר', value: breakfastName },
-              { label: 'צהריים', value: lunchName },
-              { label: 'ערב', value: dinnerName },
-            ].map(({ label, value }) => (
-              <div key={label} className="flex justify-between items-center px-4 py-2.5 text-sm">
-                <span className="text-gray-400 w-14">{label}</span>
-                <span className={value ? 'text-gray-800' : 'text-gray-300'}>
-                  {value ?? 'לא נרשם'}
-                </span>
-              </div>
-            ))}
-            <div className="flex justify-between items-center px-4 py-2.5 text-sm">
-              <span className="text-gray-400 w-14">אימון</span>
-              <span className={log.workout_done ? 'text-emerald-600 font-medium' : 'text-gray-300'}>
-                {log.workout_done ? `✅ בוצע` : 'לא נרשם'}
-              </span>
-            </div>
-            {log.weight_kg && (
-              <div className="flex justify-between items-center px-4 py-2.5 text-sm">
-                <span className="text-gray-400 w-14">משקל</span>
-                <span className="text-gray-800 font-semibold">{log.weight_kg} ק"ג</span>
-              </div>
-            )}
-          </div>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between">
+          <h2 className="font-semibold text-gray-900 text-sm">🍽️ ארוחות היום</h2>
+          <Link href="/fitness/log" className="text-xs text-gray-400 hover:text-gray-600">עדכן ←</Link>
         </div>
-      )}
+        <div className="divide-y divide-gray-50">
+          {[
+            { label: 'בוקר', value: breakfastName },
+            { label: 'צהריים', value: lunchName },
+            { label: 'ערב', value: dinnerName },
+          ].map(({ label, value }) => (
+            <Link key={label} href="/fitness/log" className="flex justify-between items-center px-4 py-3 text-sm hover:bg-gray-50 transition-colors">
+              <span className="text-gray-400 w-14 flex-shrink-0">{label}</span>
+              <span className={`text-left truncate ${value ? 'text-gray-800' : 'text-gray-300 italic'}`}>
+                {value ?? '— לא נרשם'}
+              </span>
+            </Link>
+          ))}
+          <Link href="/fitness/log" className="flex justify-between items-center px-4 py-3 text-sm hover:bg-gray-50 transition-colors">
+            <span className="text-gray-400 w-14 flex-shrink-0">אימון</span>
+            <span className={log?.workout_done ? 'text-emerald-600 font-medium' : 'text-gray-300 italic'}>
+              {log?.workout_done ? '✅ בוצע' : '— לא נרשם'}
+            </span>
+          </Link>
+          {log?.weight_kg && (
+            <div className="flex justify-between items-center px-4 py-3 text-sm">
+              <span className="text-gray-400 w-14">משקל</span>
+              <span className="text-gray-800 font-semibold">{log.weight_kg} ק"ג</span>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Weight progress */}
       {log?.weight_kg && (

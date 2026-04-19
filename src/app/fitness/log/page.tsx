@@ -13,11 +13,20 @@ import {
 } from '@/lib/fitness-logic'
 import type { DailyLog } from '@/lib/supabase'
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, subtitle, action, children }: {
+  title: string
+  subtitle?: string
+  action?: React.ReactNode
+  children: React.ReactNode
+}) {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-4 py-3 border-b border-gray-50">
-        <h2 className="font-semibold text-gray-900 text-sm">{title}</h2>
+      <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between">
+        <div>
+          <h2 className="font-semibold text-gray-900 text-sm">{title}</h2>
+          {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
+        </div>
+        {action}
       </div>
       <div className="p-4">{children}</div>
     </div>
@@ -69,7 +78,8 @@ export default function LogPage() {
           snacks: log.snacks ?? '',
           workout_done: log.workout_done,
           workout_type: log.workout_type ?? dayInfo.workoutType,
-          notes: log.notes ?? '',
+          // Strip auto-generated meal prefix lines so they don't accumulate across saves
+          notes: (log.notes ?? '').split('\n').filter(l => !l.match(/^[🍳🍽️🌙]/u)).join('\n').trim(),
         }))
       })
   }, [])
@@ -127,47 +137,52 @@ export default function LogPage() {
       <div className="sticky top-[57px] z-10 bg-gray-900 text-white rounded-2xl p-4 shadow-lg">
         <div className="flex justify-around text-center mb-3">
           <div>
-            <p className="text-2xl font-bold tabular-nums">{protein}<span className="text-xs text-gray-400 ml-0.5">g</span></p>
+            <p className="text-2xl font-bold tabular-nums text-emerald-400">{protein}<span className="text-sm text-gray-400">g</span></p>
             <p className="text-xs text-gray-400">חלבון</p>
+            <p className="text-xs text-gray-500">מתוך {dayInfo.proteinTarget}g</p>
           </div>
           <div className="w-px bg-gray-700" />
           <div>
-            <p className="text-2xl font-bold tabular-nums">{calories}</p>
+            <p className="text-2xl font-bold tabular-nums text-orange-300">{calories}</p>
             <p className="text-xs text-gray-400">קלוריות</p>
+            <p className="text-xs text-gray-500">מתוך {dayInfo.calTarget}</p>
           </div>
           <div className="w-px bg-gray-700" />
           <div>
-            <p className="text-2xl font-bold tabular-nums">{carbs}<span className="text-xs text-gray-400 ml-0.5">g</span></p>
+            <p className="text-2xl font-bold tabular-nums text-blue-300">{carbs}<span className="text-sm text-gray-400">g</span></p>
             <p className="text-xs text-gray-400">פחמימות</p>
+            <p className="text-xs text-gray-500">מתוך {dayInfo.carbTarget}g</p>
           </div>
         </div>
-        {/* Mini progress bars */}
+        {/* Progress bars */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500 w-12 text-left">חלבון</span>
-            <div className="flex-1 bg-gray-700 rounded-full h-1.5">
-              <div className="h-1.5 bg-emerald-400 rounded-full transition-all" style={{ width: `${proteinPct}%` }} />
+            <div className="flex-1 bg-gray-700 rounded-full h-2">
+              <div className="h-2 bg-emerald-400 rounded-full transition-all" style={{ width: `${proteinPct}%` }} />
             </div>
-            <span className="text-xs text-gray-400 w-8 text-right">{proteinPct}%</span>
+            <span className="text-xs text-gray-400 w-16 text-left">
+              {proteinPct < 100 ? `נשאר ${dayInfo.proteinTarget - protein}g` : '✓ הושג'}
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500 w-12 text-left">קלוריות</span>
-            <div className="flex-1 bg-gray-700 rounded-full h-1.5">
-              <div className="h-1.5 bg-orange-400 rounded-full transition-all" style={{ width: `${calPct}%` }} />
+            <div className="flex-1 bg-gray-700 rounded-full h-2">
+              <div className="h-2 bg-orange-400 rounded-full transition-all" style={{ width: `${calPct}%` }} />
             </div>
-            <span className="text-xs text-gray-400 w-8 text-right">{calPct}%</span>
+            <span className="text-xs text-gray-400 w-16 text-left">
+              {calPct < 100 ? `נשאר ${dayInfo.calTarget - calories}` : '✓ הושג'}
+            </span>
           </div>
         </div>
       </div>
 
       {/* Weight */}
-      <Section title="⚖️ משקל (אופציונלי)">
+      <Section title="⚖️ משקל בוקר">
         <input
           type="number"
           step="0.1"
           min="60"
           max="120"
-          placeholder="78.5 ק״ג"
+          placeholder="לדוגמה: 77.8"
           value={form.weight_kg}
           onChange={e => set('weight_kg', e.target.value)}
           className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
@@ -175,7 +190,19 @@ export default function LogPage() {
       </Section>
 
       {/* Breakfast */}
-      <Section title="🥣 ארוחת בוקר">
+      <Section
+        title="🥣 ארוחת בוקר"
+        subtitle="סמן כל מה שאכלת — כמות ברירת מחדל: 2 ביצים, חצי אבוקדו, קפה"
+        action={
+          <button
+            type="button"
+            onClick={() => setBreakfastItems({ ...DEFAULT_BREAKFAST_ITEMS })}
+            className="text-xs text-gray-400 hover:text-gray-600"
+          >
+            אפס
+          </button>
+        }
+      >
         <div className="space-y-1.5">
           {BREAKFAST_ITEMS.map(item => {
             const qty = breakfastItems[item.id] ?? 0
@@ -212,23 +239,23 @@ export default function LogPage() {
                 {/* Nutrition or qty controls */}
                 {checked ? (
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-gray-400 min-w-[64px] text-right">
-                      {item.protein * qty}g · {item.calories * qty}
-                    </span>
                     <button
                       type="button"
                       onClick={() => setBreakfastItems(prev => ({ ...prev, [item.id]: Math.max(0, qty - 1) }))}
-                      className="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-bold flex items-center justify-center leading-none"
+                      className="w-7 h-7 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-base font-bold flex items-center justify-center leading-none"
                     >−</button>
-                    <span className="text-sm font-bold text-gray-900 w-4 text-center tabular-nums">{qty}</span>
+                    <span className="text-sm font-bold text-gray-900 w-5 text-center tabular-nums">{qty}</span>
                     <button
                       type="button"
                       onClick={() => setBreakfastItems(prev => ({ ...prev, [item.id]: qty + 1 }))}
-                      className="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-bold flex items-center justify-center leading-none"
+                      className="w-7 h-7 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-base font-bold flex items-center justify-center leading-none"
                     >+</button>
+                    <span className="text-xs text-emerald-600 font-medium min-w-[52px] text-left">
+                      {item.protein * qty}g חלב'
+                    </span>
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-300">{item.protein}g · {item.calories}</span>
+                  <span className="text-xs text-gray-300">{item.protein}g · {item.calories} קק"ל</span>
                 )}
               </div>
             )
@@ -274,7 +301,7 @@ export default function LogPage() {
       </Section>
 
       {/* Snacks */}
-      <Section title="🥜 חטיפים">
+      <Section title="🥜 חטיפים" subtitle="ביצים קשות, קוטג', פירות, אגוזים...">
         <input
           type="text"
           placeholder="קוטג' 250g, 2 ביצים קשות..."
@@ -357,10 +384,10 @@ export default function LogPage() {
       </Section>
 
       {/* Notes */}
-      <Section title="📒 הערות">
+      <Section title="📒 הערות" subtitle="חריגות, תחושות, כל דבר שרצית לזכור">
         <textarea
           rows={2}
-          placeholder="חריגות, תחושות, הערות..."
+          placeholder="כתוב כאן..."
           value={form.notes}
           onChange={e => set('notes', e.target.value)}
           className="w-full border-2 border-gray-100 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
