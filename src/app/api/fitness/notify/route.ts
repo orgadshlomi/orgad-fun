@@ -14,12 +14,13 @@ const supabase = createClient(
 )
 
 async function sendSlack(text: string) {
-  const url = process.env.SLACK_WEBHOOK_URL
-  if (!url) return
-  await fetch(url, {
+  const token = process.env.SLACK_BOT_TOKEN
+  const channel = process.env.SLACK_CHANNEL ?? '#fitness'
+  if (!token) return
+  await fetch('https://slack.com/api/chat.postMessage', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ channel, text }),
   })
 }
 
