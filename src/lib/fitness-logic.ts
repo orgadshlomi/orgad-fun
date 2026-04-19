@@ -144,10 +144,10 @@ export const FOOD_ITEMS: FoodItem[] = [
   { id: 'egg',              name: 'ביצה',                defaultQty: 2, protein: 6,  calories: 78,  carbs: 0  },
   { id: 'avocado_half',     name: 'חצי אבוקדו',          defaultQty: 1, protein: 2,  calories: 120, carbs: 6  },
   { id: 'cottage',          name: "קוטג' 250g",          defaultQty: 1, protein: 28, calories: 210, carbs: 6  },
-  { id: 'greek_yogurt',     name: 'יוגורט יווני 200g',   defaultQty: 1, protein: 20, calories: 160, carbs: 8  },
+  { id: 'greek_yogurt',     name: 'יוגורט חלבון 200g',   defaultQty: 1, protein: 20, calories: 150, carbs: 8  },
   { id: 'bulgarian_cheese', name: 'גבינה בולגרית 30g',   defaultQty: 1, protein: 5,  calories: 75,  carbs: 1  },
   // Proteins
-  { id: 'chicken',          name: 'חזה עוף 150g',        defaultQty: 1, protein: 47, calories: 248, carbs: 0  },
+  { id: 'chicken',          name: 'חזה עוף 200g',        defaultQty: 1, protein: 62, calories: 330, carbs: 0  },
   { id: 'salmon',           name: 'סלמון 150g',          defaultQty: 1, protein: 30, calories: 260, carbs: 0  },
   { id: 'white_fish',       name: 'דג לבן 150g',         defaultQty: 1, protein: 30, calories: 150, carbs: 0  },
   { id: 'tuna',             name: 'טונה (פחית)',          defaultQty: 1, protein: 30, calories: 140, carbs: 0  },
@@ -165,7 +165,7 @@ export const FOOD_ITEMS: FoodItem[] = [
   { id: 'roasted_veg',      name: 'ירקות קלויים',        defaultQty: 1, protein: 3,  calories: 80,  carbs: 15 },
   { id: 'stir_veg',         name: 'ירקות מוקפצים',      defaultQty: 1, protein: 3,  calories: 60,  carbs: 10 },
   // Fats & extras
-  { id: 'tahini_tbsp',      name: 'כף טחינה',            defaultQty: 1, protein: 3,  calories: 85,  carbs: 2  },
+  { id: 'tahini_tbsp',      name: 'כף טחינה גולמית',     defaultQty: 1, protein: 3,  calories: 90,  carbs: 3  },
   { id: 'olive_oil',        name: 'כף שמן זית',          defaultQty: 1, protein: 0,  calories: 120, carbs: 0  },
   { id: 'coffee',           name: 'קפה שחור',            defaultQty: 1, protein: 0,  calories: 5,   carbs: 0  },
   { id: 'sugar_tsp',        name: 'כפית סוכר',           defaultQty: 1, protein: 0,  calories: 16,  carbs: 4  },

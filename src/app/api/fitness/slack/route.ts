@@ -60,10 +60,10 @@ For "food_update", also extract:
 
 Nutrition reference (be generous with calories — better to overestimate than underestimate):
 ביצת עין: 6g protein, 90kcal | חצי אבוקדו: 2g, 120kcal | שלישית אבוקדו: 1g, 80kcal
-שייק חלבון: 25g, 200kcal | חזה עוף 100g: 31g, 165kcal | קוטג' 250g: 28g, 210kcal
-יוגורט יווני 200g: 20g, 160kcal | לחם פרוסה: 3g, 80kcal | אורז 100g: 3g, 130kcal
+שייק חלבון: 25g, 200kcal | חזה עוף 200g: 62g, 330kcal | קוטג' 250g: 28g, 210kcal
+יוגורט חלבון 200g: 20g, 150kcal | לחם פרוסה: 3g, 80kcal | אורז 100g: 3g, 130kcal
 סלמון 150g: 30g, 260kcal | קפה שחור: 0g, 5kcal | כפית סוכר: 0g, 16kcal
-כף טחינה (15g): 3g protein, 85kcal | 2 כפות טחינה: 6g, 170kcal
+כף טחינה גולמית (15g): 3g protein, 90kcal | 2 כפות טחינה: 6g, 180kcal
 כרובית 200g: 4g, 50kcal | בטטה 150g: 3g, 130kcal | תירס 100g: 3g, 86kcal
 שמן זית כף: 0g, 120kcal | חמאה כף: 0g, 100kcal
 בשר טחון 100g: 17g, 250kcal | סטייק 150g: 34g, 300kcal
