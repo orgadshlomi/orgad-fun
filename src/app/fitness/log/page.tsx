@@ -26,8 +26,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function LogPage() {
   const router = useRouter()
   const dayInfo = getDayInfo()
-  const isHighCarb = dayInfo.dayType === 'high_carb'
-  const lunchSuggestions = isHighCarb
+  const hasCarbs = dayInfo.dayType === 'high_carb' || dayInfo.dayType === 'medium_carb'
+  const lunchSuggestions = hasCarbs
     ? LUNCH_OPTIONS.filter(l => l.id.endsWith('_carbs'))
     : LUNCH_OPTIONS.filter(l => l.id.endsWith('_no'))
 
@@ -190,7 +190,7 @@ export default function LogPage() {
       <Section title="🍽️ צהריים">
         <div className="flex items-center justify-between mb-3">
           <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${dayInfo.bgClass} ${dayInfo.colorClass}`}>
-            {isHighCarb ? '🌾 High Carb — עם פחמימות' : '🥗 Low Carb — ללא פחמימות'}
+            {hasCarbs ? '🌾 High Carb — עם פחמימות' : '🥗 Low Carb — ללא פחמימות'}
           </span>
         </div>
         <select

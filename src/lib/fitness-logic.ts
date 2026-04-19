@@ -18,6 +18,7 @@ export type DayInfo = {
   bgClass: string
 }
 
+// Targets per plan: Strength 1950/200g | Swim 1900/150g | Walking 1850/110g | Rest 1800/90g
 const DAY_SCHEDULE: Record<number, DayInfo> = {
   0: {
     dayType: 'high_carb',
@@ -36,7 +37,7 @@ const DAY_SCHEDULE: Record<number, DayInfo> = {
     workout: 'שחייה',
     workoutType: 'swimming',
     carbTarget: 150,
-    calTarget: 2100,
+    calTarget: 1900,
     proteinTarget: 140,
     label: 'Medium Carb — שחייה',
     emoji: '🏊',
@@ -45,12 +46,12 @@ const DAY_SCHEDULE: Record<number, DayInfo> = {
   },
   2: {
     dayType: 'very_low_carb',
-    workout: 'מנוחה',
+    workout: 'מנוחה + הליכה',
     workoutType: 'rest',
-    carbTarget: 50,
+    carbTarget: 90,
     calTarget: 1800,
     proteinTarget: 140,
-    label: 'Very Low Carb — מנוחה',
+    label: 'Low Carb — מנוחה',
     emoji: '😴',
     colorClass: 'text-amber-700',
     bgClass: 'bg-amber-50 border-amber-200',
@@ -72,7 +73,7 @@ const DAY_SCHEDULE: Record<number, DayInfo> = {
     workout: 'שחייה',
     workoutType: 'swimming',
     carbTarget: 150,
-    calTarget: 2100,
+    calTarget: 1900,
     proteinTarget: 140,
     label: 'Medium Carb — שחייה',
     emoji: '🏊',
@@ -80,25 +81,25 @@ const DAY_SCHEDULE: Record<number, DayInfo> = {
     bgClass: 'bg-blue-50 border-blue-200',
   },
   5: {
-    dayType: 'medium_carb',
-    workout: 'כושר גופני (Calisthenics)',
+    dayType: 'very_low_carb',
+    workout: 'הליכה / קליסטניקס',
     workoutType: 'calisthenics',
-    carbTarget: 150,
-    calTarget: 2100,
+    carbTarget: 110,
+    calTarget: 1850,
     proteinTarget: 140,
-    label: 'Medium Carb — כושר גופני',
-    emoji: '🤸',
-    colorClass: 'text-blue-700',
-    bgClass: 'bg-blue-50 border-blue-200',
+    label: 'Low-Medium Carb — הליכה',
+    emoji: '🚶',
+    colorClass: 'text-amber-700',
+    bgClass: 'bg-amber-50 border-amber-200',
   },
   6: {
     dayType: 'very_low_carb',
-    workout: 'מנוחה',
+    workout: 'מנוחה מוחלטת',
     workoutType: 'rest',
-    carbTarget: 50,
+    carbTarget: 90,
     calTarget: 1800,
     proteinTarget: 140,
-    label: 'Very Low Carb — מנוחה',
+    label: 'Low Carb — מנוחה',
     emoji: '😴',
     colorClass: 'text-amber-700',
     bgClass: 'bg-amber-50 border-amber-200',
@@ -128,33 +129,48 @@ export const PROTEIN_CHECKPOINTS = [
   { hour: 23, target: 120, label: 'לפני שינה', id: 'night' },
 ]
 
-export const BASE_BREAKFAST = { protein: 12, calories: 260, carbs: 5 }
+// Base breakfast: 2 fried eggs + half avocado + black coffee + 1 tsp sugar
+export const BASE_BREAKFAST = { protein: 13, calories: 260, carbs: 10 }
 
 export const BREAKFAST_OPTIONS = [
-  { id: 'A', name: 'שייק חלבון', protein: 38, calories: 460, carbs: 25 },
-  { id: 'B', name: 'יוגורט יווני + גבינה בולגרית', protein: 37, calories: 425, carbs: 17 },
-  { id: 'C', name: "קוטג' + ירקות", protein: 39, calories: 485, carbs: 21 },
+  { id: 'A', name: 'שייק חלבון (אבקה + חלב 1%)', protein: 25, calories: 200, carbs: 15 },
+  { id: 'B', name: 'יוגורט יווני 0% + גבינה בולגרית', protein: 24, calories: 165, carbs: 7 },
+  { id: 'C', name: "קוטג' 5% + גבינה בולגרית + ירקות", protein: 26, calories: 225, carbs: 11 },
 ]
 
+// All values from the official plan document (section 3)
 export const LUNCH_OPTIONS = [
-  { id: 'chicken_carbs', name: 'חזה עוף + אורז', protein: 45, calories: 580, carbs: 65 },
-  { id: 'chicken_no', name: 'חזה עוף + ירקות', protein: 45, calories: 320, carbs: 10 },
-  { id: 'salmon_carbs', name: 'סלמון + אורז', protein: 42, calories: 620, carbs: 65 },
-  { id: 'salmon_no', name: 'סלמון + ירקות', protein: 42, calories: 380, carbs: 8 },
-  { id: 'beef_carbs', name: 'סטייק רזה + בטטה', protein: 48, calories: 650, carbs: 60 },
-  { id: 'beef_no', name: 'סטייק רזה + סלט', protein: 48, calories: 370, carbs: 8 },
-  { id: 'tuna_carbs', name: 'טונה + פסטה', protein: 40, calories: 560, carbs: 70 },
-  { id: 'tuna_no', name: 'טונה + מלפפון', protein: 40, calories: 280, carbs: 5 },
+  // Chicken
+  { id: 'chicken_carbs', name: 'חזה עוף גריל + אורז + סלט', protein: 45, calories: 520, carbs: 55 },
+  { id: 'chicken_no', name: 'חזה עוף גריל + סלט גדול + זיתים', protein: 48, calories: 380, carbs: 8 },
+  { id: 'chicken_oven_carbs', name: 'עוף בתנור + בטטה + ירקות קלויים', protein: 43, calories: 500, carbs: 45 },
+  { id: 'chicken_oven_no', name: 'עוף בתנור + ירקות + טחינה', protein: 46, calories: 390, carbs: 10 },
+  { id: 'chicken_stuffed_carbs', name: 'עוף ממולא גבינה ותרד + בטטה', protein: 48, calories: 530, carbs: 40 },
+  { id: 'chicken_stuffed_no', name: 'עוף ממולא גבינה + תרד + סלט', protein: 47, calories: 400, carbs: 6 },
+  // Fish
+  { id: 'salmon_carbs', name: 'סלמון + קינואה + ירקות קלויים', protein: 44, calories: 560, carbs: 45 },
+  { id: 'salmon_no', name: 'סלמון + סלט + לימון', protein: 46, calories: 420, carbs: 5 },
+  { id: 'white_fish_carbs', name: 'דג לבן + בטטה + ירקות ים-תיכוניים', protein: 42, calories: 490, carbs: 42 },
+  { id: 'white_fish_no', name: 'דג לבן + ירקות + לימון', protein: 44, calories: 360, carbs: 8 },
+  { id: 'tuna_carbs', name: 'טונה + אורז מלא + סלט + זיתים', protein: 42, calories: 480, carbs: 50 },
+  { id: 'tuna_no', name: 'טונה + ביצה קשה + סלט + זיתים', protein: 44, calories: 360, carbs: 6 },
+  // Meat
+  { id: 'beef_carbs', name: 'סטייק + בטטה אפויה + סלט יווני', protein: 46, calories: 580, carbs: 42 },
+  { id: 'beef_no', name: 'סטייק + סלט גדול + שמן זית', protein: 46, calories: 420, carbs: 6 },
+  { id: 'beef_ground_carbs', name: 'בקר טחון + פסטה מלאה + רוטב עגבניות', protein: 42, calories: 540, carbs: 55 },
+  { id: 'beef_ground_no', name: 'בקר טחון + קישואים מוקפצים + שום', protein: 44, calories: 400, carbs: 8 },
+  // Other
   { id: 'eggs_no', name: 'ביצים + ירקות', protein: 32, calories: 350, carbs: 8 },
 ]
 
+// Dinner values from the official plan (section 5)
 export const DINNER_OPTIONS = [
-  { id: 'fish', name: 'פילה דג בתנור', protein: 38, calories: 320, carbs: 5 },
-  { id: 'frittata', name: 'פריטטה ירקות', protein: 35, calories: 340, carbs: 8 },
-  { id: 'tofu', name: 'טופו עם ירקות', protein: 35, calories: 310, carbs: 12 },
-  { id: 'chicken', name: 'עוף צלוי', protein: 42, calories: 360, carbs: 5 },
-  { id: 'salmon', name: 'סלמון אפוי', protein: 40, calories: 380, carbs: 3 },
-  { id: 'cauliflower', name: 'פיצה כרובית', protein: 36, calories: 420, carbs: 25 },
+  { id: 'fish', name: 'דג לבן + ירקות אפויים + עדשים', protein: 38, calories: 380, carbs: 20 },
+  { id: 'frittata', name: 'פריטאטה 4 ביצים + קישואים + גבינה', protein: 32, calories: 380, carbs: 8 },
+  { id: 'tofu', name: 'טופו + ברוקולי + 2 ביצים', protein: 38, calories: 420, carbs: 12 },
+  { id: 'chicken', name: 'עוף + ירקות מוקפצים', protein: 44, calories: 350, carbs: 8 },
+  { id: 'salmon', name: 'סלמון + ירקות קלויים', protein: 38, calories: 380, carbs: 6 },
+  { id: 'cauliflower', name: 'פיצה כרובית + מוצרלה + עוף', protein: 36, calories: 360, carbs: 18 },
 ]
 
 export const HEBREW_DAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת']
