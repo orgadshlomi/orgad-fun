@@ -7,7 +7,9 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+function getAnthropic() {
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+}
 
 function verifySlackSignature(body: string, timestamp: string, signature: string): boolean {
   const secret = process.env.SLACK_SIGNING_SECRET
@@ -29,7 +31,7 @@ type ParsedMeal = {
 }
 
 async function parseMessage(text: string, date: string): Promise<ParsedMeal> {
-  const msg = await anthropic.messages.create({
+  const msg = await getAnthropic().messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 512,
     system: `You are a fitness tracker assistant. The user will send Hebrew or English messages describing what they ate, their workout, or weight.
