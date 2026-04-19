@@ -58,11 +58,19 @@ For "food_update", also extract:
 - weight_kg: number (if weight mentioned)
 - notes: original text
 
-Nutrition reference:
+Nutrition reference (be generous with calories — better to overestimate than underestimate):
 ביצת עין: 6g protein, 90kcal | חצי אבוקדו: 2g, 120kcal | שלישית אבוקדו: 1g, 80kcal
 שייק חלבון: 25g, 200kcal | חזה עוף 100g: 31g, 165kcal | קוטג' 250g: 28g, 210kcal
 יוגורט יווני 200g: 20g, 160kcal | לחם פרוסה: 3g, 80kcal | אורז 100g: 3g, 130kcal
 סלמון 150g: 30g, 260kcal | קפה שחור: 0g, 5kcal | כפית סוכר: 0g, 16kcal
+כף טחינה (15g): 3g protein, 85kcal | 2 כפות טחינה: 6g, 170kcal
+כרובית 200g: 4g, 50kcal | בטטה 150g: 3g, 130kcal | תירס 100g: 3g, 86kcal
+שמן זית כף: 0g, 120kcal | חמאה כף: 0g, 100kcal
+בשר טחון 100g: 17g, 250kcal | סטייק 150g: 34g, 300kcal
+גבינה צהובה פרוסה (20g): 5g, 75kcal | ביצה קשה: 6g, 78kcal
+
+If a dish is described without exact portions, estimate generously (restaurant portions are typically larger than home portions).
+If tahini / טחינה is mentioned as a side or sauce, add at least 2 tablespoons (170kcal) unless specified otherwise.
 
 Return ONLY JSON, e.g.: {"intent":"food_update","protein_g":14,"calories_kcal":295,"notes":"2 ביצי עין וחצי אבוקדו"}`,
     messages: [{ role: 'user', content: `Date: ${date}\n${cleanText}` }],
