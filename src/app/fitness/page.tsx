@@ -15,29 +15,84 @@ import {
 } from '@/lib/fitness-logic'
 import type { DailyLog } from '@/lib/supabase'
 
-function ProgressBar({ value, max, color = 'bg-emerald-500' }: { value: number; max: number; color?: string }) {
-  const pct = Math.min(100, Math.round((value / max) * 100))
+function MacroRow({
+  protein, calories, carbs,
+  proteinTarget, calTarget, carbTarget,
+}: {
+  protein: number; calories: number; carbs: number
+  proteinTarget: number; calTarget: number; carbTarget: number
+}) {
+  const items = [
+    { label: 'חלבון', value: protein, target: proteinTarget, unit: 'g', color: 'bg-emerald-500', trackColor: 'bg-emerald-100' },
+    { label: 'קלוריות', value: calories, target: calTarget, unit: '', color: 'bg-orange-400', trackColor: 'bg-orange-100' },
+    { label: 'פחמימות', value: carbs, target: carbTarget, unit: 'g', color: 'bg-blue-400', trackColor: 'bg-blue-100' },
+  ]
   return (
-    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-      <div className={`h-full rounded-full transition-all duration-500 ${color}`} style={{ width: `${pct}%` }} />
+    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+      <div className="grid grid-cols-3 gap-4">
+        {items.map(({ label, value, target, unit, color, trackColor }) => {
+          const pct = Math.min(100, Math.round((value / target) * 100))
+          return (
+            <div key={label} className="space-y-2">
+              <div className="text-center">
+                <p className="text-xl font-bold text-gray-900 tabular-nums">{value}<span className="text-xs font-normal text-gray-400 ml-0.5">{unit}</span></p>
+                <p className="text-xs text-gray-500">{label}</p>
+              </div>
+              <div className={`w-full ${trackColor} rounded-full h-2`}>
+                <div className={`h-2 rounded-full ${color} transition-all duration-700`} style={{ width: `${pct}%` }} />
+              </div>
+              <p className="text-center text-xs text-gray-400">{pct}%</p>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
 
-function Stat({ label, value, target, unit }: { label: string; value: number; target: number; unit: string }) {
-  const pct = Math.min(100, Math.round((value / target) * 100))
-  const color = pct >= 100 ? 'bg-emerald-500' : pct >= 70 ? 'bg-blue-500' : 'bg-amber-400'
+function CheckpointTimeline({ protein, currentHour }: { protein: number; currentHour: number }) {
+  const nextCheckpoint = PROTEIN_CHECKPOINTS.find(cp => currentHour < cp.hour && protein < cp.target)
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-2">
-      <div className="flex justify-between text-sm font-medium">
-        <span className="text-gray-600">{label}</span>
-        <span className="text-gray-900">
-          <strong>{value}</strong>
-          <span className="text-gray-500"> / {target} {unit}</span>
-        </span>
+    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="font-semibold text-gray-900 text-sm">⏰ נקודות בקרה — חלבון</h2>
+        {nextCheckpoint && (
+          <span className="text-xs text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">
+            עוד {Math.max(0, nextCheckpoint.target - protein)}g
+          </span>
+        )}
       </div>
-      <ProgressBar value={value} max={target} color={color} />
-      <p className="text-xs text-gray-500 text-left">{pct}%</p>
+      <div className="flex items-center gap-1">
+        {PROTEIN_CHECKPOINTS.map((cp, i) => {
+          const done = protein >= cp.target
+          const active = !done && currentHour < cp.hour && nextCheckpoint?.id === cp.id
+          return (
+            <div key={cp.id} className="flex-1 flex flex-col items-center gap-1.5">
+              {/* Connector line + dot */}
+              <div className="w-full flex items-center">
+                {i > 0 && (
+                  <div className={`flex-1 h-0.5 ${
+                    protein >= PROTEIN_CHECKPOINTS[i - 1].target ? 'bg-emerald-400' : 'bg-gray-200'
+                  }`} />
+                )}
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                  done ? 'bg-emerald-500 text-white' :
+                  active ? 'bg-amber-400 text-white ring-2 ring-amber-200' :
+                  'bg-gray-100 text-gray-400'
+                }`}>
+                  {done ? '✓' : cp.target}
+                </div>
+                {i < PROTEIN_CHECKPOINTS.length - 1 && (
+                  <div className={`flex-1 h-0.5 ${done ? 'bg-emerald-400' : 'bg-gray-200'}`} />
+                )}
+              </div>
+              <p className={`text-xs text-center leading-tight ${
+                done ? 'text-emerald-600' : active ? 'text-amber-600 font-medium' : 'text-gray-400'
+              }`}>{cp.label.replace('עד ', '')}</p>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -63,8 +118,6 @@ export default function FitnessDashboard() {
   const calories = log?.calories_kcal ?? 0
   const carbs = log?.carbs_g ?? 0
 
-  const nextCheckpoint = PROTEIN_CHECKPOINTS.find(cp => currentHour < cp.hour && protein < cp.target)
-
   const breakfastName = log?.breakfast_type
     ? BREAKFAST_OPTIONS.find(b => b.id === log.breakfast_type)?.name
     : null
@@ -76,131 +129,121 @@ export default function FitnessDashboard() {
     : null
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Header */}
       <div>
-        <p className="text-sm text-gray-500">{hebrewDate}</p>
-        <h1 className="text-2xl font-bold text-gray-900">שלום שלומי 👋</h1>
-        <p className="text-sm text-gray-500 mt-0.5">שבוע {week} מתוך 6 | יעד: {PLAN_TARGET_WEIGHT}ק"ג</p>
+        <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">{hebrewDate}</p>
+        <h1 className="text-2xl font-bold text-gray-900 mt-0.5">שלום שלומי 👋</h1>
+        <p className="text-sm text-gray-500">שבוע {week} מתוך 6 · יעד: {PLAN_TARGET_WEIGHT} ק"ג</p>
       </div>
 
-      {/* Day Type Badge */}
-      <div className={`rounded-xl border p-4 ${dayInfo.bgClass}`}>
-        <div className="flex items-center justify-between">
+      {/* Day Type Card */}
+      <div className={`rounded-2xl border-2 p-4 ${dayInfo.bgClass}`}>
+        <div className="flex items-start justify-between">
           <div>
-            <p className={`text-sm font-medium ${dayInfo.colorClass}`}>{dayInfo.label}</p>
-            <p className="text-gray-700 font-semibold mt-0.5">{dayInfo.emoji} {dayInfo.workout}</p>
+            <p className={`text-xs font-semibold uppercase tracking-wide ${dayInfo.colorClass}`}>{dayInfo.label}</p>
+            <p className="text-gray-800 font-bold text-lg mt-0.5">{dayInfo.emoji} {dayInfo.workout}</p>
           </div>
-          <div className="text-right text-xs text-gray-500 space-y-0.5">
-            <p>🔥 {dayInfo.calTarget} קק"ל</p>
-            <p>💪 {dayInfo.proteinTarget}g חלבון</p>
-            <p>🌾 {dayInfo.carbTarget}g פחמימות</p>
+          <div className="text-left flex gap-3 mt-0.5">
+            <div className="text-center">
+              <p className={`text-lg font-bold ${dayInfo.colorClass}`}>{dayInfo.calTarget}</p>
+              <p className="text-xs text-gray-500">קק"ל</p>
+            </div>
+            <div className="text-center">
+              <p className={`text-lg font-bold ${dayInfo.colorClass}`}>{dayInfo.proteinTarget}g</p>
+              <p className="text-xs text-gray-500">חלבון</p>
+            </div>
+            <div className="text-center">
+              <p className={`text-lg font-bold ${dayInfo.colorClass}`}>{dayInfo.carbTarget}g</p>
+              <p className="text-xs text-gray-500">פחמ'</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Protein Checkpoints */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <h2 className="font-semibold text-gray-900 mb-3">⏰ נקודות בקרה — חלבון</h2>
-        <div className="space-y-2">
-          {PROTEIN_CHECKPOINTS.map(cp => {
-            const done = protein >= cp.target
-            const active = !done && currentHour < cp.hour && nextCheckpoint?.id === cp.id
-            return (
-              <div
-                key={cp.id}
-                className={`flex items-center justify-between py-1.5 px-2 rounded-lg text-sm ${
-                  done ? 'bg-emerald-50 text-emerald-700' : active ? 'bg-amber-50 text-amber-700' : 'text-gray-500'
-                }`}
-              >
-                <span>{done ? '✅' : active ? '⏳' : '⬜'} {cp.label}</span>
-                <span className="font-mono font-medium">{cp.target}g</span>
-              </div>
-            )
-          })}
-        </div>
-        {nextCheckpoint && (
-          <p className="mt-3 text-xs text-amber-600 font-medium">
-            עוד {Math.max(0, nextCheckpoint.target - protein)}g עד {nextCheckpoint.label}
-          </p>
-        )}
+      {/* Primary CTA — moved up */}
+      <div className="flex gap-3">
+        <Link
+          href="/fitness/log"
+          className={`flex-1 text-white text-center py-3.5 rounded-xl font-bold text-base hover:opacity-90 transition-opacity ${
+            log ? 'bg-gray-900' : 'bg-emerald-600'
+          }`}
+        >
+          {log ? '✏️ עדכן יומן' : '📝 רשום יומן'}
+        </Link>
+        <Link
+          href="/fitness/weekly"
+          className="px-5 bg-white border border-gray-200 text-gray-700 text-center py-3.5 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+        >
+          📊
+        </Link>
       </div>
 
-      {/* Progress Stats */}
+      {/* Checkpoint Timeline */}
+      <CheckpointTimeline protein={protein} currentHour={currentHour} />
+
+      {/* Macro Progress */}
       {loading ? (
-        <div className="h-32 bg-gray-100 rounded-xl animate-pulse" />
+        <div className="h-28 bg-gray-100 rounded-2xl animate-pulse" />
       ) : (
-        <div className="space-y-3">
-          <Stat label="💪 חלבון" value={protein} target={dayInfo.proteinTarget} unit="g" />
-          <Stat label="🔥 קלוריות" value={calories} target={dayInfo.calTarget} unit="קק&quot;ל" />
-          <Stat label="🌾 פחמימות" value={carbs} target={dayInfo.carbTarget} unit="g" />
-        </div>
+        <MacroRow
+          protein={protein} calories={calories} carbs={carbs}
+          proteinTarget={dayInfo.proteinTarget} calTarget={dayInfo.calTarget} carbTarget={dayInfo.carbTarget}
+        />
       )}
 
-      {/* Today's meals summary */}
+      {/* Today's meals */}
       {log && (
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <h2 className="font-semibold text-gray-900 mb-3">🍽️ ארוחות היום</h2>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-500">בוקר</span>
-              <span className="text-gray-900">{breakfastName ?? '—'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">צהריים</span>
-              <span className="text-gray-900">{lunchName ?? '—'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">ערב</span>
-              <span className="text-gray-900">{dinnerName ?? '—'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">אימון</span>
-              <span className={log.workout_done ? 'text-emerald-600 font-medium' : 'text-gray-400'}>
-                {log.workout_done ? `✅ ${log.workout_type ?? 'בוצע'}` : '—'}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-50">
+            <h2 className="font-semibold text-gray-900 text-sm">🍽️ ארוחות היום</h2>
+          </div>
+          <div className="divide-y divide-gray-50">
+            {[
+              { label: 'בוקר', value: breakfastName },
+              { label: 'צהריים', value: lunchName },
+              { label: 'ערב', value: dinnerName },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex justify-between items-center px-4 py-2.5 text-sm">
+                <span className="text-gray-400 w-14">{label}</span>
+                <span className={value ? 'text-gray-800' : 'text-gray-300'}>
+                  {value ?? 'לא נרשם'}
+                </span>
+              </div>
+            ))}
+            <div className="flex justify-between items-center px-4 py-2.5 text-sm">
+              <span className="text-gray-400 w-14">אימון</span>
+              <span className={log.workout_done ? 'text-emerald-600 font-medium' : 'text-gray-300'}>
+                {log.workout_done ? `✅ בוצע` : 'לא נרשם'}
               </span>
             </div>
             {log.weight_kg && (
-              <div className="flex justify-between">
-                <span className="text-gray-500">משקל</span>
-                <span className="text-gray-900 font-medium">{log.weight_kg} ק"ג</span>
+              <div className="flex justify-between items-center px-4 py-2.5 text-sm">
+                <span className="text-gray-400 w-14">משקל</span>
+                <span className="text-gray-800 font-semibold">{log.weight_kg} ק"ג</span>
               </div>
             )}
           </div>
         </div>
       )}
 
-      {/* Action Buttons */}
-      <div className="flex gap-3">
-        <Link
-          href="/fitness/log"
-          className="flex-1 bg-gray-900 text-white text-center py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors"
-        >
-          {log ? '✏️ עדכן יומן' : '📝 רשום יומן'}
-        </Link>
-        <Link
-          href="/fitness/weekly"
-          className="flex-1 bg-white border border-gray-200 text-gray-700 text-center py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
-        >
-          📊 התקדמות
-        </Link>
-      </div>
-
       {/* Weight progress */}
       {log?.weight_kg && (
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex justify-between text-sm mb-2">
-            <span className="text-gray-500">יעד משקל</span>
-            <span className="font-medium text-gray-900">{log.weight_kg} → {PLAN_TARGET_WEIGHT} ק"ג</span>
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+          <div className="flex justify-between text-sm mb-3">
+            <span className="text-gray-500 font-medium">יעד משקל</span>
+            <span className="font-bold text-gray-900">{log.weight_kg} → {PLAN_TARGET_WEIGHT} ק"ג</span>
           </div>
-          <ProgressBar
-            value={PLAN_START_WEIGHT - log.weight_kg}
-            max={PLAN_START_WEIGHT - PLAN_TARGET_WEIGHT}
-            color="bg-emerald-500"
-          />
-          <p className="text-xs text-gray-500 mt-1 text-left">
-            ירידה: {(PLAN_START_WEIGHT - log.weight_kg).toFixed(1)} ק"ג | נשאר: {(log.weight_kg - PLAN_TARGET_WEIGHT).toFixed(1)} ק"ג
-          </p>
+          <div className="relative w-full bg-gray-100 rounded-full h-4 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-emerald-500 transition-all duration-700 flex items-center justify-end pr-2"
+              style={{ width: `${Math.min(100, ((PLAN_START_WEIGHT - log.weight_kg) / (PLAN_START_WEIGHT - PLAN_TARGET_WEIGHT)) * 100)}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs text-gray-400 mt-1.5">
+            <span>ירד: {(PLAN_START_WEIGHT - log.weight_kg).toFixed(1)} ק"ג</span>
+            <span>נשאר: {(log.weight_kg - PLAN_TARGET_WEIGHT).toFixed(1)} ק"ג</span>
+          </div>
         </div>
       )}
     </div>

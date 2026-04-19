@@ -12,6 +12,17 @@ import {
 } from '@/lib/fitness-logic'
 import type { DailyLog } from '@/lib/supabase'
 
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="px-4 py-3 border-b border-gray-50">
+        <h2 className="font-semibold text-gray-900 text-sm">{title}</h2>
+      </div>
+      <div className="p-4">{children}</div>
+    </div>
+  )
+}
+
 export default function LogPage() {
   const router = useRouter()
   const dayInfo = getDayInfo()
@@ -59,6 +70,9 @@ export default function LogPage() {
     form.dinner_option || null,
   )
 
+  const proteinPct = Math.min(100, Math.round((protein / dayInfo.proteinTarget) * 100))
+  const calPct = Math.min(100, Math.round((calories / dayInfo.calTarget) * 100))
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -85,188 +99,210 @@ export default function LogPage() {
   const set = (k: string, v: string | boolean) => setForm(f => ({ ...f, [k]: v }))
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">📝 יומן יומי</h1>
         <p className="text-sm text-gray-500 mt-0.5">{dayInfo.emoji} {dayInfo.label}</p>
       </div>
 
-      {/* Live nutrition preview */}
-      <div className="bg-gray-900 text-white rounded-xl p-4 flex justify-around text-center">
-        <div>
-          <p className="text-2xl font-bold">{protein}</p>
-          <p className="text-xs text-gray-400">חלבון g</p>
+      {/* Live nutrition preview — sticky */}
+      <div className="sticky top-[57px] z-10 bg-gray-900 text-white rounded-2xl p-4 shadow-lg">
+        <div className="flex justify-around text-center mb-3">
+          <div>
+            <p className="text-2xl font-bold tabular-nums">{protein}<span className="text-xs text-gray-400 ml-0.5">g</span></p>
+            <p className="text-xs text-gray-400">חלבון</p>
+          </div>
+          <div className="w-px bg-gray-700" />
+          <div>
+            <p className="text-2xl font-bold tabular-nums">{calories}</p>
+            <p className="text-xs text-gray-400">קלוריות</p>
+          </div>
+          <div className="w-px bg-gray-700" />
+          <div>
+            <p className="text-2xl font-bold tabular-nums">{carbs}<span className="text-xs text-gray-400 ml-0.5">g</span></p>
+            <p className="text-xs text-gray-400">פחמימות</p>
+          </div>
         </div>
-        <div className="border-r border-gray-700" />
-        <div>
-          <p className="text-2xl font-bold">{calories}</p>
-          <p className="text-xs text-gray-400">קלוריות</p>
-        </div>
-        <div className="border-r border-gray-700" />
-        <div>
-          <p className="text-2xl font-bold">{carbs}</p>
-          <p className="text-xs text-gray-400">פחמימות g</p>
+        {/* Mini progress bars */}
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500 w-12 text-left">חלבון</span>
+            <div className="flex-1 bg-gray-700 rounded-full h-1.5">
+              <div className="h-1.5 bg-emerald-400 rounded-full transition-all" style={{ width: `${proteinPct}%` }} />
+            </div>
+            <span className="text-xs text-gray-400 w-8 text-right">{proteinPct}%</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500 w-12 text-left">קלוריות</span>
+            <div className="flex-1 bg-gray-700 rounded-full h-1.5">
+              <div className="h-1.5 bg-orange-400 rounded-full transition-all" style={{ width: `${calPct}%` }} />
+            </div>
+            <span className="text-xs text-gray-400 w-8 text-right">{calPct}%</span>
+          </div>
         </div>
       </div>
 
       {/* Weight */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
-        <h2 className="font-semibold text-gray-900">⚖️ משקל (אופציונלי)</h2>
+      <Section title="⚖️ משקל (אופציונלי)">
         <input
           type="number"
           step="0.1"
           min="60"
           max="120"
-          placeholder="78.5"
+          placeholder="78.5 ק״ג"
           value={form.weight_kg}
           onChange={e => set('weight_kg', e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-right text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
+          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
         />
-      </div>
+      </Section>
 
       {/* Breakfast */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
-        <h2 className="font-semibold text-gray-900">🥣 ארוחת בוקר</h2>
-        <p className="text-xs text-gray-500">בסיס קבוע: 2 ביצים + אבוקדו + קפה (260 קק"ל, 12g חלבון)</p>
+      <Section title="🥣 ארוחת בוקר">
+        <p className="text-xs text-gray-400 mb-3">בסיס קבוע: 2 ביצים + אבוקדו + קפה (260 קק"ל, 12g חלבון)</p>
         <div className="space-y-2">
           {BREAKFAST_OPTIONS.map(opt => (
             <label
               key={opt.id}
-              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
-                form.breakfast_type === opt.id ? 'border-gray-900 bg-gray-50' : 'border-gray-200'
+              className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                form.breakfast_type === opt.id
+                  ? 'border-gray-900 bg-gray-50'
+                  : 'border-gray-100 hover:border-gray-200'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="breakfast"
-                  value={opt.id}
-                  checked={form.breakfast_type === opt.id}
-                  onChange={() => set('breakfast_type', opt.id)}
-                  className="accent-gray-900"
-                />
-                <span className="text-sm text-gray-900">{opt.name}</span>
+              <div className="flex items-center gap-2.5">
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                  form.breakfast_type === opt.id ? 'border-gray-900' : 'border-gray-300'
+                }`}>
+                  {form.breakfast_type === opt.id && <div className="w-2 h-2 rounded-full bg-gray-900" />}
+                </div>
+                <input type="radio" name="breakfast" value={opt.id} checked={form.breakfast_type === opt.id}
+                  onChange={() => set('breakfast_type', opt.id)} className="sr-only" />
+                <span className="text-sm text-gray-900 font-medium">{opt.name}</span>
               </div>
-              <span className="text-xs text-gray-500">{opt.protein}g • {opt.calories} קק"ל</span>
+              <span className="text-xs text-gray-400 font-medium">{opt.protein}g · {opt.calories} קק"ל</span>
             </label>
           ))}
         </div>
-      </div>
+      </Section>
 
       {/* Lunch */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-gray-900">🍽️ צהריים</h2>
-          <span className={`text-xs px-2 py-0.5 rounded-full ${dayInfo.bgClass} ${dayInfo.colorClass}`}>
-            {isHighCarb ? 'High Carb — עם פחמימות' : 'Low Carb — ללא פחמימות'}
+      <Section title="🍽️ צהריים">
+        <div className="flex items-center justify-between mb-3">
+          <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${dayInfo.bgClass} ${dayInfo.colorClass}`}>
+            {isHighCarb ? '🌾 High Carb — עם פחמימות' : '🥗 Low Carb — ללא פחמימות'}
           </span>
         </div>
         <select
           value={form.lunch_option}
           onChange={e => set('lunch_option', e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
+          className="w-full border-2 border-gray-100 rounded-xl px-3 py-2.5 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
         >
           <option value="">בחר ארוחת צהריים</option>
           <optgroup label="מומלץ להיום">
             {lunchSuggestions.map(o => (
-              <option key={o.id} value={o.id}>{o.name} ({o.protein}g • {o.calories} קק"ל)</option>
+              <option key={o.id} value={o.id}>{o.name} ({o.protein}g · {o.calories} קק"ל)</option>
             ))}
           </optgroup>
           <optgroup label="כל האפשרויות">
             {LUNCH_OPTIONS.filter(o => !lunchSuggestions.includes(o)).map(o => (
-              <option key={o.id} value={o.id}>{o.name} ({o.protein}g • {o.calories} קק"ל)</option>
+              <option key={o.id} value={o.id}>{o.name} ({o.protein}g · {o.calories} קק"ל)</option>
             ))}
           </optgroup>
         </select>
-      </div>
+      </Section>
 
       {/* Snacks */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-2">
-        <h2 className="font-semibold text-gray-900">🥜 חטיפים</h2>
+      <Section title="🥜 חטיפים">
         <input
           type="text"
-          placeholder="למשל: קוטג' 250g, 2 ביצים קשות..."
+          placeholder="קוטג' 250g, 2 ביצים קשות..."
           value={form.snacks}
           onChange={e => set('snacks', e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-right text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
+          className="w-full border-2 border-gray-100 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
         />
-      </div>
+      </Section>
 
       {/* Dinner */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
-        <h2 className="font-semibold text-gray-900">🌙 ערב</h2>
+      <Section title="🌙 ארוחת ערב">
         <div className="space-y-2">
           {DINNER_OPTIONS.map(opt => (
             <label
               key={opt.id}
-              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
-                form.dinner_option === opt.id ? 'border-gray-900 bg-gray-50' : 'border-gray-200'
+              className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                form.dinner_option === opt.id
+                  ? 'border-gray-900 bg-gray-50'
+                  : 'border-gray-100 hover:border-gray-200'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="dinner"
-                  value={opt.id}
-                  checked={form.dinner_option === opt.id}
-                  onChange={() => set('dinner_option', opt.id)}
-                  className="accent-gray-900"
-                />
-                <span className="text-sm text-gray-900">{opt.name}</span>
+              <div className="flex items-center gap-2.5">
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                  form.dinner_option === opt.id ? 'border-gray-900' : 'border-gray-300'
+                }`}>
+                  {form.dinner_option === opt.id && <div className="w-2 h-2 rounded-full bg-gray-900" />}
+                </div>
+                <input type="radio" name="dinner" value={opt.id} checked={form.dinner_option === opt.id}
+                  onChange={() => set('dinner_option', opt.id)} className="sr-only" />
+                <span className="text-sm text-gray-900 font-medium">{opt.name}</span>
               </div>
-              <span className="text-xs text-gray-500">{opt.protein}g • {opt.calories} קק"ל</span>
+              <span className="text-xs text-gray-400 font-medium">{opt.protein}g · {opt.calories} קק"ל</span>
             </label>
           ))}
         </div>
-      </div>
+      </Section>
 
       {/* Workout */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
-        <h2 className="font-semibold text-gray-900">🏃 אימון</h2>
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={form.workout_done}
-            onChange={e => set('workout_done', e.target.checked)}
-            className="w-5 h-5 rounded accent-gray-900"
-          />
-          <span className="text-gray-900">בוצע: {dayInfo.workout}</span>
+      <Section title="🏃 אימון">
+        <label className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+          form.workout_done ? 'border-emerald-500 bg-emerald-50' : 'border-gray-100'
+        }`}>
+          <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+            form.workout_done ? 'border-emerald-500 bg-emerald-500' : 'border-gray-300'
+          }`}>
+            {form.workout_done && <span className="text-white text-xs font-bold">✓</span>}
+          </div>
+          <input type="checkbox" checked={form.workout_done}
+            onChange={e => set('workout_done', e.target.checked)} className="sr-only" />
+          <span className={`text-sm font-medium ${form.workout_done ? 'text-emerald-700' : 'text-gray-600'}`}>
+            {dayInfo.workout}
+          </span>
         </label>
         {form.workout_done && (
-          <select
-            value={form.workout_type}
-            onChange={e => set('workout_type', e.target.value)}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
-          >
-            <option value="gym_a">ג'ים A — רגליים + גב</option>
-            <option value="gym_b">ג'ים B — חזה + כתפיים + טריצפס</option>
-            <option value="swimming">שחייה</option>
-            <option value="calisthenics">כושר גופני (Calisthenics)</option>
-          </select>
+          <div className="mt-3">
+            <select
+              value={form.workout_type}
+              onChange={e => set('workout_type', e.target.value)}
+              className="w-full border-2 border-gray-100 rounded-xl px-3 py-2.5 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+            >
+              <option value="gym_a">ג'ים A — רגליים + גב</option>
+              <option value="gym_b">ג'ים B — חזה + כתפיים + טריצפס</option>
+              <option value="swimming">שחייה</option>
+              <option value="calisthenics">כושר גופני (Calisthenics)</option>
+            </select>
+          </div>
         )}
-      </div>
+      </Section>
 
       {/* Notes */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-2">
-        <h2 className="font-semibold text-gray-900">📒 הערות</h2>
+      <Section title="📒 הערות">
         <textarea
           rows={2}
           placeholder="חריגות, תחושות, הערות..."
           value={form.notes}
           onChange={e => set('notes', e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-right text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
+          className="w-full border-2 border-gray-100 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
         />
-      </div>
+      </Section>
 
       <button
         type="submit"
         disabled={saving || saved}
-        className={`w-full py-4 rounded-xl font-bold text-lg transition-colors ${
+        className={`w-full py-4 rounded-2xl font-bold text-base transition-all ${
           saved
-            ? 'bg-emerald-500 text-white'
+            ? 'bg-emerald-500 text-white scale-95'
             : saving
-            ? 'bg-gray-400 text-white cursor-wait'
-            : 'bg-gray-900 text-white hover:bg-gray-800'
+            ? 'bg-gray-300 text-gray-500 cursor-wait'
+            : 'bg-gray-900 text-white hover:bg-gray-800 active:scale-95'
         }`}
       >
         {saved ? '✅ נשמר!' : saving ? 'שומר...' : 'שמור יומן'}
