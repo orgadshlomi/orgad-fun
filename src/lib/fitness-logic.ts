@@ -129,17 +129,46 @@ export const PROTEIN_CHECKPOINTS = [
   { hour: 23, target: 120, label: 'לפני שינה', id: 'night' },
 ]
 
-// Each breakfast option is a COMPLETE meal (base already included where relevant)
-export const BREAKFAST_OPTIONS = [
-  { id: 'eggs_avo', name: '2 ביצים + אבוקדו + קפה', protein: 14, calories: 290, carbs: 10 },
-  { id: 'A', name: '2 ביצים + אבוקדו + שייק חלבון', protein: 38, calories: 460, carbs: 25 },
-  { id: 'B', name: '2 ביצים + אבוקדו + יוגורט יווני + גבינה בולגרית', protein: 37, calories: 425, carbs: 17 },
-  { id: 'C', name: "2 ביצים + אבוקדו + קוטג' + גבינה + ירקות", protein: 39, calories: 485, carbs: 21 },
-  { id: 'oatmeal', name: 'דייסת שיבולת שועל + פירות', protein: 8, calories: 350, carbs: 55 },
-  { id: 'chia', name: "זרעי צ'יה + חלב צמחי + פירות", protein: 8, calories: 280, carbs: 32 },
-  { id: 'bread_tahini', name: 'לחם מלא + ירקות + טחינה + ביצה', protein: 14, calories: 380, carbs: 35 },
-  { id: 'custom', name: 'אחר...', protein: 0, calories: 0, carbs: 0 },
+export type BreakfastItem = {
+  id: string
+  name: string
+  defaultQty: number
+  protein: number   // per unit
+  calories: number  // per unit
+  carbs: number     // per unit
+}
+
+export const BREAKFAST_ITEMS: BreakfastItem[] = [
+  { id: 'egg',             name: 'ביצה',                    defaultQty: 2, protein: 6,  calories: 78,  carbs: 0  },
+  { id: 'avocado_half',    name: 'חצי אבוקדו',              defaultQty: 1, protein: 2,  calories: 120, carbs: 6  },
+  { id: 'coffee',          name: 'קפה שחור',                defaultQty: 1, protein: 0,  calories: 5,   carbs: 0  },
+  { id: 'protein_shake',   name: 'שייק חלבון',              defaultQty: 1, protein: 25, calories: 200, carbs: 5  },
+  { id: 'greek_yogurt',    name: 'יוגורט יווני 200g',       defaultQty: 1, protein: 20, calories: 160, carbs: 8  },
+  { id: 'bulgarian_cheese',name: 'גבינה בולגרית 30g',       defaultQty: 1, protein: 5,  calories: 75,  carbs: 1  },
+  { id: 'cottage',         name: "קוטג' 250g",              defaultQty: 1, protein: 28, calories: 210, carbs: 6  },
+  { id: 'oatmeal',         name: 'דייסת שיבולת שועל',       defaultQty: 1, protein: 10, calories: 300, carbs: 55 },
+  { id: 'fruits',          name: 'פירות (מנה)',              defaultQty: 1, protein: 1,  calories: 80,  carbs: 20 },
+  { id: 'chia_milk',       name: "זרעי צ'יה + חלב צמחי",   defaultQty: 1, protein: 5,  calories: 180, carbs: 20 },
+  { id: 'bread_slice',     name: 'פרוסת לחם מלא',           defaultQty: 1, protein: 3,  calories: 80,  carbs: 15 },
+  { id: 'tahini_tbsp',     name: 'כף טחינה',                defaultQty: 1, protein: 3,  calories: 85,  carbs: 2  },
 ]
+
+export const DEFAULT_BREAKFAST_ITEMS: Record<string, number> = {
+  egg: 2,
+  avocado_half: 1,
+  coffee: 1,
+}
+
+export function calcBreakfastNutrition(items: Record<string, number>) {
+  let protein = 0, calories = 0, carbs = 0
+  for (const item of BREAKFAST_ITEMS) {
+    const qty = items[item.id] ?? 0
+    protein += item.protein * qty
+    calories += item.calories * qty
+    carbs += item.carbs * qty
+  }
+  return { protein, calories, carbs }
+}
 
 // All values from the official plan document (section 3)
 export const LUNCH_OPTIONS = [
@@ -191,18 +220,15 @@ export function toISODate(date: Date): string {
 }
 
 export function calcNutrition(
-  breakfastId: string | null,
+  breakfastItems: Record<string, number> | null,
   lunchId: string | null,
   dinnerId: string | null,
 ) {
-  let protein = 0
-  let calories = 0
-  let carbs = 0
+  const b = breakfastItems ? calcBreakfastNutrition(breakfastItems) : { protein: 0, calories: 0, carbs: 0 }
+  let protein = b.protein
+  let calories = b.calories
+  let carbs = b.carbs
 
-  if (breakfastId && breakfastId !== 'custom') {
-    const b = BREAKFAST_OPTIONS.find(o => o.id === breakfastId)
-    if (b) { protein += b.protein; calories += b.calories; carbs += b.carbs }
-  }
   if (lunchId && lunchId !== 'custom') {
     const l = LUNCH_OPTIONS.find(o => o.id === lunchId)
     if (l) { protein += l.protein; calories += l.calories; carbs += l.carbs }

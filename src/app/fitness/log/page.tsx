@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   getDayInfo,
-  BREAKFAST_OPTIONS,
+  BREAKFAST_ITEMS,
+  DEFAULT_BREAKFAST_ITEMS,
   LUNCH_OPTIONS,
   DINNER_OPTIONS,
   calcNutrition,
@@ -33,11 +34,10 @@ export default function LogPage() {
 
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [breakfastItems, setBreakfastItems] = useState<Record<string, number>>({ ...DEFAULT_BREAKFAST_ITEMS })
   const [form, setForm] = useState({
     date: toISODate(new Date()),
     weight_kg: '',
-    breakfast_type: 'B',
-    breakfast_custom: '',
     lunch_option: lunchSuggestions[0]?.id ?? '',
     lunch_custom: '',
     dinner_option: '',
@@ -53,10 +53,17 @@ export default function LogPage() {
       .then(r => r.json())
       .then(({ log }: { log: DailyLog | null }) => {
         if (!log) return
+        if (log.breakfast_type) {
+          try {
+            const parsed = JSON.parse(log.breakfast_type)
+            if (typeof parsed === 'object') setBreakfastItems(parsed)
+          } catch {
+            // legacy string id — ignore, keep defaults
+          }
+        }
         setForm(f => ({
           ...f,
           weight_kg: log.weight_kg?.toString() ?? '',
-          breakfast_type: log.breakfast_type ?? 'B',
           lunch_option: log.lunch_option ?? lunchSuggestions[0]?.id ?? '',
           dinner_option: log.dinner_option ?? '',
           snacks: log.snacks ?? '',
@@ -68,7 +75,7 @@ export default function LogPage() {
   }, [])
 
   const { protein, calories, carbs } = calcNutrition(
-    form.breakfast_type || null,
+    breakfastItems,
     form.lunch_option || null,
     form.dinner_option || null,
   )
@@ -80,7 +87,6 @@ export default function LogPage() {
     e.preventDefault()
     setSaving(true)
     const customNotes = [
-      form.breakfast_type === 'custom' && form.breakfast_custom && `🍳 בוקר: ${form.breakfast_custom}`,
       form.lunch_option === 'custom' && form.lunch_custom && `🍽️ צהריים: ${form.lunch_custom}`,
       form.dinner_option === 'custom' && form.dinner_custom && `🌙 ערב: ${form.dinner_custom}`,
       form.notes,
@@ -91,6 +97,7 @@ export default function LogPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
+          breakfast_type: JSON.stringify(breakfastItems),
           weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : null,
           protein_g: protein,
           calories_kcal: calories,
@@ -169,42 +176,64 @@ export default function LogPage() {
 
       {/* Breakfast */}
       <Section title="🥣 ארוחת בוקר">
-        <div className="space-y-2">
-          {BREAKFAST_OPTIONS.map(opt => (
-            <label
-              key={opt.id}
-              className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                form.breakfast_type === opt.id
-                  ? 'border-gray-900 bg-gray-50'
-                  : 'border-gray-100 hover:border-gray-200'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                  form.breakfast_type === opt.id ? 'border-gray-900' : 'border-gray-300'
-                }`}>
-                  {form.breakfast_type === opt.id && <div className="w-2 h-2 rounded-full bg-gray-900" />}
-                </div>
-                <input type="radio" name="breakfast" value={opt.id} checked={form.breakfast_type === opt.id}
-                  onChange={() => set('breakfast_type', opt.id)} className="sr-only" />
-                <span className="text-sm text-gray-900 font-medium">{opt.name}</span>
+        <div className="space-y-1.5">
+          {BREAKFAST_ITEMS.map(item => {
+            const qty = breakfastItems[item.id] ?? 0
+            const checked = qty > 0
+            const toggle = () => setBreakfastItems(prev => ({
+              ...prev,
+              [item.id]: checked ? 0 : item.defaultQty,
+            }))
+            return (
+              <div
+                key={item.id}
+                className={`flex items-center gap-3 p-2.5 rounded-xl border-2 transition-all ${
+                  checked ? 'border-gray-900 bg-gray-50' : 'border-gray-100'
+                }`}
+              >
+                {/* Checkbox */}
+                <button
+                  type="button"
+                  onClick={toggle}
+                  className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                    checked ? 'border-gray-900 bg-gray-900' : 'border-gray-300'
+                  }`}
+                >
+                  {checked && <span className="text-white text-[10px] font-bold leading-none">✓</span>}
+                </button>
+
+                {/* Name */}
+                <button type="button" onClick={toggle} className="flex-1 text-right">
+                  <span className={`text-sm font-medium ${checked ? 'text-gray-900' : 'text-gray-500'}`}>
+                    {item.name}
+                  </span>
+                </button>
+
+                {/* Nutrition or qty controls */}
+                {checked ? (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-gray-400 min-w-[64px] text-right">
+                      {item.protein * qty}g · {item.calories * qty}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setBreakfastItems(prev => ({ ...prev, [item.id]: Math.max(0, qty - 1) }))}
+                      className="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-bold flex items-center justify-center leading-none"
+                    >−</button>
+                    <span className="text-sm font-bold text-gray-900 w-4 text-center tabular-nums">{qty}</span>
+                    <button
+                      type="button"
+                      onClick={() => setBreakfastItems(prev => ({ ...prev, [item.id]: qty + 1 }))}
+                      className="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-bold flex items-center justify-center leading-none"
+                    >+</button>
+                  </div>
+                ) : (
+                  <span className="text-xs text-gray-300">{item.protein}g · {item.calories}</span>
+                )}
               </div>
-              {opt.id !== 'custom' && (
-                <span className="text-xs text-gray-400 font-medium">{opt.protein}g · {opt.calories} קק"ל</span>
-              )}
-            </label>
-          ))}
+            )
+          })}
         </div>
-        {form.breakfast_type === 'custom' && (
-          <input
-            type="text"
-            placeholder="תאר את ארוחת הבוקר..."
-            value={form.breakfast_custom}
-            onChange={e => set('breakfast_custom', e.target.value)}
-            className="mt-3 w-full border-2 border-gray-900 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-            autoFocus
-          />
-        )}
       </Section>
 
       {/* Lunch */}

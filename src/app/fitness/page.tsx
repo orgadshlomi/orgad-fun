@@ -9,7 +9,7 @@ import {
   PROTEIN_CHECKPOINTS,
   PLAN_START_WEIGHT,
   PLAN_TARGET_WEIGHT,
-  BREAKFAST_OPTIONS,
+  BREAKFAST_ITEMS,
   LUNCH_OPTIONS,
   DINNER_OPTIONS,
 } from '@/lib/fitness-logic'
@@ -119,7 +119,15 @@ export default function FitnessDashboard() {
   const carbs = log?.carbs_g ?? 0
 
   const breakfastName = log?.breakfast_type
-    ? BREAKFAST_OPTIONS.find(b => b.id === log.breakfast_type)?.name
+    ? (() => {
+        try {
+          const items: Record<string, number> = JSON.parse(log.breakfast_type)
+          return BREAKFAST_ITEMS
+            .filter(i => (items[i.id] ?? 0) > 0)
+            .map(i => items[i.id] > 1 ? `${items[i.id]}× ${i.name}` : i.name)
+            .join(', ')
+        } catch { return null }
+      })()
     : null
   const lunchName = log?.lunch_option
     ? LUNCH_OPTIONS.find(l => l.id === log.lunch_option)?.name
