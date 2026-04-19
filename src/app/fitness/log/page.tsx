@@ -155,22 +155,29 @@ export default function LogPage() {
       form.notes,
     ].filter(Boolean).join('\n')
     try {
-      await fetch('/api/fitness/log', {
+      const res = await fetch('/api/fitness/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...form,
+          date: form.date,
+          weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : null,
           breakfast_type: JSON.stringify(foodItems),
           lunch_option: null,
           dinner_option: null,
-          weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : null,
           protein_g: protein,
           calories_kcal: calories,
           carbs_g: carbs,
+          workout_done: form.workout_done,
+          workout_type: form.workout_type,
           day_type: dayInfo.dayType,
           notes: customNotes,
         }),
       })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        alert(`שגיאה בשמירה: ${err.error ?? res.status}`)
+        return
+      }
       setSaved(true)
       setTimeout(() => { router.push('/fitness'); router.refresh() }, 1200)
     } finally {
