@@ -106,16 +106,11 @@ export default function LogPage() {
 
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [breakfastItems, setBreakfastItems] = useState<Record<string, number>>({ ...DEFAULT_BREAKFAST_ITEMS })
-  const [breakfastCustom, setBreakfastCustom] = useState('')
-  const [lunchItems, setLunchItems] = useState<Record<string, number>>({})
-  const [lunchCustom, setLunchCustom] = useState('')
-  const [dinnerItems, setDinnerItems] = useState<Record<string, number>>({})
-  const [dinnerCustom, setDinnerCustom] = useState('')
+  const [foodItems, setFoodItems] = useState<Record<string, number>>({ ...DEFAULT_BREAKFAST_ITEMS })
+  const [foodCustom, setFoodCustom] = useState('')
   const [form, setForm] = useState({
     date: toISODate(new Date()),
     weight_kg: '',
-    snacks: '',
     workout_done: false,
     workout_type: dayInfo.workoutType,
     workout_duration: '45',
@@ -129,18 +124,14 @@ export default function LogPage() {
       .then(({ log }: { log: DailyLog | null }) => {
         if (!log) return
         if (log.breakfast_type) {
-          try { const p = JSON.parse(log.breakfast_type); if (typeof p === 'object') setBreakfastItems(p) } catch {}
-        }
-        if (log.lunch_option) {
-          try { const p = JSON.parse(log.lunch_option); if (typeof p === 'object') setLunchItems(p) } catch {}
-        }
-        if (log.dinner_option) {
-          try { const p = JSON.parse(log.dinner_option); if (typeof p === 'object') setDinnerItems(p) } catch {}
+          try {
+            const p = JSON.parse(log.breakfast_type)
+            if (typeof p === 'object') setFoodItems(p)
+          } catch {}
         }
         setForm(f => ({
           ...f,
           weight_kg: log.weight_kg?.toString() ?? '',
-          snacks: log.snacks ?? '',
           workout_done: log.workout_done,
           workout_type: log.workout_type ?? dayInfo.workoutType,
           notes: (log.notes ?? '').split('\n').filter(l => !l.match(/^[🍳🍽️🌙]/u)).join('\n').trim(),
@@ -148,13 +139,7 @@ export default function LogPage() {
       })
   }, [])
 
-  const b = calcFoodNutrition(breakfastItems)
-  const l = calcFoodNutrition(lunchItems)
-  const d = calcFoodNutrition(dinnerItems)
-  const protein = b.protein + l.protein + d.protein
-  const calories = b.calories + l.calories + d.calories
-  const carbs = b.carbs + l.carbs + d.carbs
-
+  const { protein, calories, carbs } = calcFoodNutrition(foodItems)
   const proteinPct = Math.min(100, Math.round((protein / dayInfo.proteinTarget) * 100))
   const calPct = Math.min(100, Math.round((calories / dayInfo.calTarget) * 100))
 
@@ -166,9 +151,7 @@ export default function LogPage() {
       : null
     const customNotes = [
       workoutLine,
-      breakfastCustom && `🍳 בוקר: ${breakfastCustom}`,
-      lunchCustom && `🍽️ צהריים: ${lunchCustom}`,
-      dinnerCustom && `🌙 ערב: ${dinnerCustom}`,
+      foodCustom && `🍴 ${foodCustom}`,
       form.notes,
     ].filter(Boolean).join('\n')
     try {
@@ -177,9 +160,9 @@ export default function LogPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          breakfast_type: JSON.stringify(breakfastItems),
-          lunch_option: JSON.stringify(lunchItems),
-          dinner_option: JSON.stringify(dinnerItems),
+          breakfast_type: JSON.stringify(foodItems),
+          lunch_option: null,
+          dinner_option: null,
           weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : null,
           protein_g: protein,
           calories_kcal: calories,
@@ -260,13 +243,13 @@ export default function LogPage() {
         />
       </Section>
 
-      {/* Breakfast */}
+      {/* Food — unified daily list */}
       <Section
-        title="🥣 ארוחת בוקר"
+        title="🍽️ מה אכלת היום"
         action={
           <button
             type="button"
-            onClick={() => setBreakfastItems({ ...DEFAULT_BREAKFAST_ITEMS })}
+            onClick={() => { setFoodItems({ ...DEFAULT_BREAKFAST_ITEMS }); setFoodCustom('') }}
             className="text-xs text-gray-400 hover:text-gray-600"
           >
             אפס
@@ -275,32 +258,10 @@ export default function LogPage() {
       >
         <FoodChecklist
           items={FOOD_ITEMS}
-          values={breakfastItems}
-          onChange={setBreakfastItems}
-          customValue={breakfastCustom}
-          onCustomChange={setBreakfastCustom}
-        />
-      </Section>
-
-      {/* Lunch */}
-      <Section title="🍽️ צהריים">
-        <FoodChecklist
-          items={FOOD_ITEMS}
-          values={lunchItems}
-          onChange={setLunchItems}
-          customValue={lunchCustom}
-          onCustomChange={setLunchCustom}
-        />
-      </Section>
-
-      {/* Dinner */}
-      <Section title="🌙 ארוחת ערב">
-        <FoodChecklist
-          items={FOOD_ITEMS}
-          values={dinnerItems}
-          onChange={setDinnerItems}
-          customValue={dinnerCustom}
-          onCustomChange={setDinnerCustom}
+          values={foodItems}
+          onChange={setFoodItems}
+          customValue={foodCustom}
+          onCustomChange={setFoodCustom}
         />
       </Section>
 

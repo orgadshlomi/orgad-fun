@@ -121,19 +121,17 @@ export default function FitnessDashboard() {
   const calories = log?.calories_kcal ?? 0
   const carbs = log?.carbs_g ?? 0
 
-  const parseMealName = (json: string | null | undefined) => {
-    if (!json) return null
-    try {
-      const items: Record<string, number> = JSON.parse(json)
-      return FOOD_ITEMS
-        .filter(i => (items[i.id] ?? 0) > 0)
-        .map(i => items[i.id] > 1 ? `${items[i.id]}× ${i.name}` : i.name)
-        .join(', ') || null
-    } catch { return null }
-  }
-  const breakfastName = parseMealName(log?.breakfast_type)
-  const lunchName = parseMealName(log?.lunch_option)
-  const dinnerName = parseMealName(log?.dinner_option)
+  const foodName = log?.breakfast_type
+    ? (() => {
+        try {
+          const items: Record<string, number> = JSON.parse(log.breakfast_type)
+          return FOOD_ITEMS
+            .filter(i => (items[i.id] ?? 0) > 0)
+            .map(i => items[i.id] > 1 ? `${items[i.id]}× ${i.name}` : i.name)
+            .join(', ') || null
+        } catch { return null }
+      })()
+    : null
 
   return (
     <div className="space-y-4">
@@ -199,25 +197,19 @@ export default function FitnessDashboard() {
         />
       )}
 
-      {/* Today's meals */}
+      {/* Today's log */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between">
-          <h2 className="font-semibold text-gray-900 text-sm">🍽️ ארוחות היום</h2>
+          <h2 className="font-semibold text-gray-900 text-sm">🍽️ יומן היום</h2>
           <Link href="/fitness/log" className="text-xs text-gray-400 hover:text-gray-600">עדכן ←</Link>
         </div>
         <div className="divide-y divide-gray-50">
-          {[
-            { label: 'בוקר', value: breakfastName },
-            { label: 'צהריים', value: lunchName },
-            { label: 'ערב', value: dinnerName },
-          ].map(({ label, value }) => (
-            <Link key={label} href="/fitness/log" className="flex justify-between items-center px-4 py-3 text-sm hover:bg-gray-50 transition-colors">
-              <span className="text-gray-400 w-14 flex-shrink-0">{label}</span>
-              <span className={`text-left truncate ${value ? 'text-gray-800' : 'text-gray-300 italic'}`}>
-                {value ?? '— לא נרשם'}
-              </span>
-            </Link>
-          ))}
+          <Link href="/fitness/log" className="flex justify-between items-center px-4 py-3 text-sm hover:bg-gray-50 transition-colors">
+            <span className="text-gray-400 w-14 flex-shrink-0">מזון</span>
+            <span className={`text-left truncate ${foodName ? 'text-gray-800' : 'text-gray-300 italic'}`}>
+              {foodName ?? '— לא נרשם'}
+            </span>
+          </Link>
           <Link href="/fitness/log" className="flex justify-between items-center px-4 py-3 text-sm hover:bg-gray-50 transition-colors">
             <span className="text-gray-400 w-14 flex-shrink-0">אימון</span>
             <span className={log?.workout_done ? 'text-emerald-600 font-medium' : 'text-gray-300 italic'}>
