@@ -172,7 +172,7 @@ export default function LogPage() {
         }),
       })
       setSaved(true)
-      setTimeout(() => router.push('/fitness'), 1200)
+      setTimeout(() => { router.push('/fitness'); router.refresh() }, 1200)
     } finally {
       setSaving(false)
     }
