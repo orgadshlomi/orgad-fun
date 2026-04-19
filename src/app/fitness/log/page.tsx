@@ -37,8 +37,11 @@ export default function LogPage() {
     date: toISODate(new Date()),
     weight_kg: '',
     breakfast_type: 'B',
+    breakfast_custom: '',
     lunch_option: lunchSuggestions[0]?.id ?? '',
+    lunch_custom: '',
     dinner_option: '',
+    dinner_custom: '',
     snacks: '',
     workout_done: false,
     workout_type: dayInfo.workoutType,
@@ -76,6 +79,12 @@ export default function LogPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
+    const customNotes = [
+      form.breakfast_type === 'custom' && form.breakfast_custom && `🍳 בוקר: ${form.breakfast_custom}`,
+      form.lunch_option === 'custom' && form.lunch_custom && `🍽️ צהריים: ${form.lunch_custom}`,
+      form.dinner_option === 'custom' && form.dinner_custom && `🌙 ערב: ${form.dinner_custom}`,
+      form.notes,
+    ].filter(Boolean).join('\n')
     try {
       await fetch('/api/fitness/log', {
         method: 'POST',
@@ -87,6 +96,7 @@ export default function LogPage() {
           calories_kcal: calories,
           carbs_g: carbs,
           day_type: dayInfo.dayType,
+          notes: customNotes,
         }),
       })
       setSaved(true)
@@ -159,7 +169,6 @@ export default function LogPage() {
 
       {/* Breakfast */}
       <Section title="🥣 ארוחת בוקר">
-        <p className="text-xs text-gray-400 mb-3">בסיס קבוע: 2 ביצים + אבוקדו + קפה (260 קק"ל, 12g חלבון)</p>
         <div className="space-y-2">
           {BREAKFAST_OPTIONS.map(opt => (
             <label
@@ -180,10 +189,22 @@ export default function LogPage() {
                   onChange={() => set('breakfast_type', opt.id)} className="sr-only" />
                 <span className="text-sm text-gray-900 font-medium">{opt.name}</span>
               </div>
-              <span className="text-xs text-gray-400 font-medium">{opt.protein}g · {opt.calories} קק"ל</span>
+              {opt.id !== 'custom' && (
+                <span className="text-xs text-gray-400 font-medium">{opt.protein}g · {opt.calories} קק"ל</span>
+              )}
             </label>
           ))}
         </div>
+        {form.breakfast_type === 'custom' && (
+          <input
+            type="text"
+            placeholder="תאר את ארוחת הבוקר..."
+            value={form.breakfast_custom}
+            onChange={e => set('breakfast_custom', e.target.value)}
+            className="mt-3 w-full border-2 border-gray-900 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+            autoFocus
+          />
+        )}
       </Section>
 
       {/* Lunch */}
@@ -209,7 +230,18 @@ export default function LogPage() {
               <option key={o.id} value={o.id}>{o.name} ({o.protein}g · {o.calories} קק"ל)</option>
             ))}
           </optgroup>
+          <option value="custom">אחר — הקלד בחופשי...</option>
         </select>
+        {form.lunch_option === 'custom' && (
+          <input
+            type="text"
+            placeholder="תאר את ארוחת הצהריים..."
+            value={form.lunch_custom}
+            onChange={e => set('lunch_custom', e.target.value)}
+            className="mt-3 w-full border-2 border-gray-900 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+            autoFocus
+          />
+        )}
       </Section>
 
       {/* Snacks */}
@@ -245,10 +277,22 @@ export default function LogPage() {
                   onChange={() => set('dinner_option', opt.id)} className="sr-only" />
                 <span className="text-sm text-gray-900 font-medium">{opt.name}</span>
               </div>
-              <span className="text-xs text-gray-400 font-medium">{opt.protein}g · {opt.calories} קק"ל</span>
+              {opt.id !== 'custom' && (
+                <span className="text-xs text-gray-400 font-medium">{opt.protein}g · {opt.calories} קק"ל</span>
+              )}
             </label>
           ))}
         </div>
+        {form.dinner_option === 'custom' && (
+          <input
+            type="text"
+            placeholder="תאר את ארוחת הערב..."
+            value={form.dinner_custom}
+            onChange={e => set('dinner_custom', e.target.value)}
+            className="mt-3 w-full border-2 border-gray-900 rounded-xl px-3 py-2.5 text-right text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+            autoFocus
+          />
+        )}
       </Section>
 
       {/* Workout */}

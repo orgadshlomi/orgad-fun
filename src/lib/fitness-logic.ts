@@ -129,13 +129,16 @@ export const PROTEIN_CHECKPOINTS = [
   { hour: 23, target: 120, label: 'לפני שינה', id: 'night' },
 ]
 
-// Base breakfast: 2 fried eggs + half avocado + black coffee + 1 tsp sugar
-export const BASE_BREAKFAST = { protein: 13, calories: 260, carbs: 10 }
-
+// Each breakfast option is a COMPLETE meal (base already included where relevant)
 export const BREAKFAST_OPTIONS = [
-  { id: 'A', name: 'שייק חלבון (אבקה + חלב 1%)', protein: 25, calories: 200, carbs: 15 },
-  { id: 'B', name: 'יוגורט יווני 0% + גבינה בולגרית', protein: 24, calories: 165, carbs: 7 },
-  { id: 'C', name: "קוטג' 5% + גבינה בולגרית + ירקות", protein: 26, calories: 225, carbs: 11 },
+  { id: 'eggs_avo', name: '2 ביצים + אבוקדו + קפה', protein: 14, calories: 290, carbs: 10 },
+  { id: 'A', name: '2 ביצים + אבוקדו + שייק חלבון', protein: 38, calories: 460, carbs: 25 },
+  { id: 'B', name: '2 ביצים + אבוקדו + יוגורט יווני + גבינה בולגרית', protein: 37, calories: 425, carbs: 17 },
+  { id: 'C', name: "2 ביצים + אבוקדו + קוטג' + גבינה + ירקות", protein: 39, calories: 485, carbs: 21 },
+  { id: 'oatmeal', name: 'דייסת שיבולת שועל + פירות', protein: 8, calories: 350, carbs: 55 },
+  { id: 'chia', name: "זרעי צ'יה + חלב צמחי + פירות", protein: 8, calories: 280, carbs: 32 },
+  { id: 'bread_tahini', name: 'לחם מלא + ירקות + טחינה + ביצה', protein: 14, calories: 380, carbs: 35 },
+  { id: 'custom', name: 'אחר...', protein: 0, calories: 0, carbs: 0 },
 ]
 
 // All values from the official plan document (section 3)
@@ -166,11 +169,11 @@ export const LUNCH_OPTIONS = [
 // Dinner values from the official plan (section 5)
 export const DINNER_OPTIONS = [
   { id: 'fish', name: 'דג לבן + ירקות אפויים + עדשים', protein: 38, calories: 380, carbs: 20 },
-  { id: 'frittata', name: 'פריטאטה 4 ביצים + קישואים + גבינה', protein: 32, calories: 380, carbs: 8 },
   { id: 'tofu', name: 'טופו + ברוקולי + 2 ביצים', protein: 38, calories: 420, carbs: 12 },
   { id: 'chicken', name: 'עוף + ירקות מוקפצים', protein: 44, calories: 350, carbs: 8 },
   { id: 'salmon', name: 'סלמון + ירקות קלויים', protein: 38, calories: 380, carbs: 6 },
   { id: 'cauliflower', name: 'פיצה כרובית + מוצרלה + עוף', protein: 36, calories: 360, carbs: 18 },
+  { id: 'custom', name: 'אחר...', protein: 0, calories: 0, carbs: 0 },
 ]
 
 export const HEBREW_DAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת']
@@ -192,19 +195,19 @@ export function calcNutrition(
   lunchId: string | null,
   dinnerId: string | null,
 ) {
-  let protein = BASE_BREAKFAST.protein
-  let calories = BASE_BREAKFAST.calories
-  let carbs = BASE_BREAKFAST.carbs
+  let protein = 0
+  let calories = 0
+  let carbs = 0
 
-  if (breakfastId) {
+  if (breakfastId && breakfastId !== 'custom') {
     const b = BREAKFAST_OPTIONS.find(o => o.id === breakfastId)
     if (b) { protein += b.protein; calories += b.calories; carbs += b.carbs }
   }
-  if (lunchId) {
+  if (lunchId && lunchId !== 'custom') {
     const l = LUNCH_OPTIONS.find(o => o.id === lunchId)
     if (l) { protein += l.protein; calories += l.calories; carbs += l.carbs }
   }
-  if (dinnerId) {
+  if (dinnerId && dinnerId !== 'custom') {
     const d = DINNER_OPTIONS.find(o => o.id === dinnerId)
     if (d) { protein += d.protein; calories += d.calories; carbs += d.carbs }
   }
