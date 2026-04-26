@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FundedInsider — The Only Prop Firm I Actually Recommend</title>
+  <meta name="description" content="I've traded with 11 prop firms. One stands apart. Here's why I moved my serious capital here.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0B0B12;
+      --bg2:       #13131E;
+      --bg3:       #1A1A28;
+      --border:    #252535;
+      --gold:      #C9A84C;
+      --gold-dim:  #A88730;
+      --gold-glow: rgba(201,168,76,0.15);
+      --text:      #EEEEF4;
+      --muted:     #8888A8;
+      --green:     #3FBA74;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 17px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .wordmark {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .wordmark span { color: var(--muted); font-weight: 400; }
+    .disclosure-pill {
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 10px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 72px 24px 56px;
+      text-align: center;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 22px;
+    }
+    .eyebrow::before, .eyebrow::after {
+      content: '—';
+      margin: 0 8px;
+      color: var(--gold-dim);
+    }
+    h1 {
+      font-size: clamp(28px, 6vw, 46px);
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    h1 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+    .hero-sub {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+    .hero-sub strong { color: var(--text); }
+
+    /* ── CTA BUTTON ── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--gold);
+      color: #0B0B12;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 16px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-primary:hover { background: #D9B85C; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary svg { flex-shrink: 0; }
+
+    .hero-note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .hero-note strong { color: var(--green); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── REASONS ── */
+    .reasons {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 24px;
+    }
+    .reasons-label {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 48px;
+    }
+    .reason-list {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .reason {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    .reason-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--gold-glow);
+      border: 1px solid rgba(201,168,76,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .reason-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .reason-body {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .reason-body strong { color: var(--text); }
+
+    /* ── PROOF BAR ── */
+    .proof-bar {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .proof-bar-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 36px 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: clamp(26px, 5vw, 36px);
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── QUOTE ── */
+    .quote-section {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 64px 24px;
+      text-align: center;
+    }
+    blockquote {
+      font-size: clamp(17px, 3vw, 21px);
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.6;
+      position: relative;
+      padding: 0 24px;
+    }
+    blockquote::before {
+      content: '\201C';
+      font-size: 60px;
+      color: var(--gold);
+      opacity: 0.4;
+      position: absolute;
+      top: -16px;
+      left: 0;
+      font-style: normal;
+      line-height: 1;
+    }
+    .quote-author {
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .quote-author strong { color: var(--text); }
+
+    /* ── FINAL CTA ── */
+    .final-cta {
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .final-cta-inner {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 72px 24px;
+      text-align: center;
+    }
+    .final-cta h2 {
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+    }
+    .final-cta h2 em { font-style: normal; color: var(--gold); }
+    .final-cta p {
+      font-size: 16px;
+      color: var(--muted);
+      margin-bottom: 32px;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .final-cta p strong { color: var(--text); }
+    .risk-line {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .risk-line span {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    footer a { color: var(--muted); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 600px) {
+      .hero { padding: 52px 20px 44px; }
+      .btn-primary { width: 100%; justify-content: center; font-size: 17px; padding: 18px 24px; }
+      .reason { grid-template-columns: 40px 1fr; gap: 14px; }
+      .proof-bar-inner { grid-template-columns: 1fr; gap: 28px; }
+      .proof-bar-inner .stat:not(:last-child) {
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+      }
+      .final-cta-inner { padding: 52px 20px; }
+      blockquote { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="wordmark">Funded<span>Insider</span></div>
+    <div class="disclosure-pill">Affiliate disclosure</div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="eyebrow">My #1 Pick — April 2026</div>
+    <h1>Stop Trading<br>Your <em>Own</em> Money.</h1>
+    <p class="hero-sub">
+      I've traded with 11 funded programs. Only one lets you start for
+      <strong>$8.88</strong> and pays the rest <strong>only after you pass</strong>.
+    </p>
+    <a href="https://getleveraged.com/turbo-trade/" class="btn-primary">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+      Claim a $100K Account — Start for $8.88
+    </a>
+    <p class="hero-note">
+      <strong>Pay nothing else</strong> unless you pass the simulation
+    </p>
+  </section>
+
+  <hr class="divider">
+
+  <!-- THREE REASONS -->
+  <section class="reasons">
+    <div class="reasons-label">Why GetLeveraged is the one I use</div>
+    <div class="reason-list">
+
+      <div class="reason">
+        <div class="reason-icon">⚡</div>
+        <div>
+          <div class="reason-title">The lowest barrier I've seen</div>
+          <p class="reason-body">
+            $8.88 to start. The full challenge fee only applies <strong>if you pass</strong>.
+            That's the entire risk. No other firm I've tested comes close.
+          </p>
+        </div>
+      </div>
+
+      <div class="reason">
+        <div class="reason-icon">🎯</div>
+        <div>
+          <div class="reason-title">They pay — and the numbers are public</div>
+          <p class="reason-body">
+            Over <strong>$3.2M paid to traders</strong> with verified payout certificates.
+            In this space, seeing is believing. These are real numbers from real people.
+          </p>
+        </div>
+      </div>
+
+      <div class="reason">
+        <div class="reason-icon">🔁</div>
+        <div>
+          <div class="reason-title">Refundable on first payout</div>
+          <p class="reason-body">
+            When you hit your first profit split, the challenge fee comes back to you.
+            The house <strong>eats the cost</strong> of your tryout.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROOF BAR -->
+  <div class="proof-bar">
+    <div class="proof-bar-inner">
+      <div class="stat">
+        <div class="stat-num">$8.88</div>
+        <div class="stat-label">To start a $100K account</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">$3.2M+</div>
+        <div class="stat-label">Paid out to traders (verified)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3 steps</div>
+        <div class="stat-label">Pay → Pass → Get funded</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUOTE -->
+  <section class="quote-section">
+    <blockquote>
+      Passed in 11 days. Got my full fee refunded on first payout.
+      Best risk/reward ratio in funded trading, no question.
+    </blockquote>
+    <div class="quote-author">
+      <strong>Marcus T.</strong> &nbsp;·&nbsp; Funded trader, UK &nbsp;·&nbsp;
+      <span style="color: #3FBA74; font-weight: 600;">$4,200 payout ✓</span>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <div class="final-cta-inner">
+      <h2>Ready to trade with <em>their</em> money?</h2>
+      <p>
+        <strong>$8.88 gets you in.</strong> If you pass the simulation,
+        you get a funded account. If not, you risked less than a lunch.
+      </p>
+      <a href="https://getleveraged.com/turbo-trade/" class="btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+        Start for $8.88 — GetLeveraged Turbo
+      </a>
+      <p class="risk-line">
+        <span>Pay the full challenge fee only if you pass.</span>
+        Fee refunded on first payout.
+      </p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>FundedInsider is an independent affiliate site. We earn a commission if you purchase through our links — at no cost to you.</p>
+    <p style="margin-top: 8px;">Results shown are real but not typical. Trading involves risk. Only trade what you can afford to lose.</p>
+  </footer>
+
+</body>
+</html>

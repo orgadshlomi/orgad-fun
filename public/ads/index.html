@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GetLeveraged — LP Mockups</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0F0F14;
+      color: #E8E8F0;
+      min-height: 100vh;
+      padding: 48px 24px;
+    }
+    .header {
+      max-width: 720px;
+      margin: 0 auto 48px;
+    }
+    .label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #6666AA;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #E8E8F0;
+    }
+    h1 span { color: #4CAF7D; }
+    .sub {
+      margin-top: 8px;
+      font-size: 15px;
+      color: #6666AA;
+    }
+    .grid {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .card {
+      background: #17171F;
+      border: 1px solid #252535;
+      border-radius: 12px;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+    .card-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #4CAF7D;
+      background: rgba(76,175,125,0.12);
+      border-radius: 4px;
+      padding: 3px 8px;
+      margin-bottom: 10px;
+    }
+    .card-tag.amber { color: #C9A84C; background: rgba(201,168,76,0.12); }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #E8E8F0;
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-size: 14px;
+      color: #6666AA;
+      line-height: 1.5;
+    }
+    .card-url {
+      font-size: 12px;
+      color: #4444AA;
+      margin-top: 10px;
+      font-family: monospace;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1E1E2C;
+      border: 1px solid #333350;
+      color: #C0C0E0;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn:hover { border-color: #4CAF7D; color: #4CAF7D; }
+    .btn.amber:hover { border-color: #C9A84C; color: #C9A84C; }
+    @media (max-width: 540px) {
+      .card { grid-template-columns: 1fr; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="label">GetLeveraged · Internal</div>
+    <h1>LP <span>Mockups</span></h1>
+    <p class="sub">Landing page concepts for the "Why are you trading your own money?" campaign</p>
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div>
+        <div class="card-tag">Concept A · Bridge/Editorial</div>
+        <div class="card-title">FundedTraderReport</div>
+        <div class="card-desc">
+          Independent editorial review angle. Ranked comparison of prop firms.
+          Educates cold traffic on the category → drives to Turbo purchase.
+        </div>
+        <div class="card-url">orgad.fun/lvgd</div>
+      </div>
+      <a href="/lvgd" class="btn" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View
+      </a>
+    </div>
+
+    <div class="card">
+      <div>
+        <div class="card-tag amber">Concept B · Affiliate/Dark</div>
+        <div class="card-title">FundedInsider</div>
+        <div class="card-desc">
+          Traditional affiliate style. Dark premium design. Personal "my #1 pick"
+          angle. Minimal copy, single CTA. Similar to Leveraged brand colors.
+        </div>
+        <div class="card-url">orgad.fun/fi</div>
+      </div>
+      <a href="/fi" class="btn amber" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View
+      </a>
+    </div>
+
+  </div>
+</body>
+</html>
