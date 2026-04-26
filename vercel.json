@@ -2,10 +2,10 @@
   "rewrites": [
     { "source": "/lvgd", "destination": "/lvgd/index.html" },
     { "source": "/lvgd/", "destination": "/lvgd/index.html" },
-    { "source": "/fi", "destination": "/fi/index.html" },
-    { "source": "/fi/", "destination": "/fi/index.html" },
-    { "source": "/ads", "destination": "/ads/index.html" },
-    { "source": "/ads/", "destination": "/ads/index.html" }
+    { "source": "/lvgd/a", "destination": "/lvgd/a/index.html" },
+    { "source": "/lvgd/a/", "destination": "/lvgd/a/index.html" },
+    { "source": "/lvgd/b", "destination": "/lvgd/b/index.html" },
+    { "source": "/lvgd/b/", "destination": "/lvgd/b/index.html" }
   ],
   "crons": [
     {

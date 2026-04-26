@@ -1,895 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Best Prop Trading Firms 2026 | FundedTraderReport</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700;900&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GetLeveraged — LP Mockups</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --black: #0f0f0f;
-      --dark: #1a1a2e;
-      --mid: #374151;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --bg: #f9fafb;
-      --white: #ffffff;
-      --gold: #d4a017;
-      --green: #16a34a;
-      --green-light: #dcfce7;
-      --red: #dc2626;
-      --accent: #1d4ed8;
-      --accent-light: #eff6ff;
-    }
-
-    /* ── BASE ── */
-    html { font-size: 17px; }
     body {
-      font-family: 'Inter', sans-serif;
-      color: var(--black);
-      background: var(--white);
-      line-height: 1.65;
-      padding-bottom: 80px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0F0F14;
+      color: #E8E8F0;
+      min-height: 100vh;
+      padding: 48px 24px;
     }
-
-    /* ── HEADER ── */
-    .site-header {
-      border-bottom: 1px solid var(--border);
-      background: var(--white);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+    .header {
+      max-width: 720px;
+      margin: 0 auto 48px;
     }
-    .site-header-inner {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #6666AA;
+      margin-bottom: 12px;
     }
-    .logo {
-      font-family: 'Merriweather', serif;
-      font-size: 17px;
-      font-weight: 900;
-      color: var(--dark);
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #E8E8F0;
     }
-    .logo span { color: var(--accent); }
-    .header-tag {
-      font-size: 12px;
-      color: var(--muted);
-      background: var(--bg);
-      padding: 5px 12px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
+    h1 span { color: #4CAF7D; }
+    .sub {
+      margin-top: 8px;
+      font-size: 15px;
+      color: #6666AA;
     }
-
-    /* ── PAGE WRAPPER ── */
-    .page {
+    .grid {
       max-width: 720px;
       margin: 0 auto;
-      padding: 0 20px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
-
-    /* ── ARTICLE LABEL ── */
-    .article-label {
-      margin-top: 32px;
+    .card {
+      background: #17171F;
+      border: 1px solid #252535;
+      border-radius: 12px;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+    .card-tag {
+      display: inline-block;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 1.5px;
-      color: var(--muted);
+      letter-spacing: 0.1em;
       text-transform: uppercase;
+      color: #4CAF7D;
+      background: rgba(76,175,125,0.12);
+      border-radius: 4px;
+      padding: 3px 8px;
+      margin-bottom: 10px;
     }
-
-    /* ── TRUST PILL ── */
-    .trust-pill {
+    .card-tag.amber { color: #C9A84C; background: rgba(201,168,76,0.12); }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #E8E8F0;
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-size: 14px;
+      color: #6666AA;
+      line-height: 1.5;
+    }
+    .card-url {
+      font-size: 12px;
+      color: #4444AA;
+      margin-top: 10px;
+      font-family: monospace;
+    }
+    .btn {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      background: var(--green-light);
-      border: 1px solid #bbf7d0;
-      border-radius: 20px;
-      padding: 7px 14px;
+      gap: 6px;
+      background: #1E1E2C;
+      border: 1px solid #333350;
+      color: #C0C0E0;
       font-size: 13px;
-      font-weight: 700;
-      color: var(--green);
-      margin-top: 14px;
-    }
-    .trust-pill-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--green);
-      animation: blink 2s infinite;
-    }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-    /* ── HERO ── */
-    .hero { margin-top: 16px; }
-    .hero h1 {
-      font-family: 'Merriweather', serif;
-      font-size: clamp(24px, 6vw, 38px);
-      font-weight: 900;
-      line-height: 1.2;
-      color: var(--dark);
-      letter-spacing: -0.4px;
-      margin-top: 10px;
-    }
-    .hero-legitimacy {
-      margin-top: 16px;
-      font-size: 15px;
-      color: var(--mid);
-      background: var(--accent-light);
-      border-left: 3px solid var(--accent);
-      padding: 13px 16px;
-      border-radius: 0 6px 6px 0;
-      line-height: 1.55;
-    }
-
-    /* ── MATH BLOCK ── */
-    .math-block {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 20px;
-      margin-top: 24px;
-    }
-    .math-eyebrow {
-      text-align: center;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 16px;
-    }
-    .math-cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .math-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px 14px;
-      text-align: center;
-    }
-    .math-card.win {
-      border: 2px solid var(--green);
-      background: var(--green-light);
-    }
-    .mc-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .7px; margin-bottom: 8px; }
-    .mc-number { font-size: 34px; font-weight: 800; color: var(--dark); line-height: 1; }
-    .math-card.win .mc-number { color: var(--green); }
-    .mc-detail { font-size: 12px; color: var(--muted); margin-top: 7px; line-height: 1.4; }
-    .math-verdict {
-      margin-top: 16px;
-      text-align: center;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--dark);
-    }
-    .math-verdict em { color: var(--green); font-style: normal; }
-
-    /* ── HERO SUB + CTA ── */
-    .hero-sub {
-      margin-top: 20px;
-      font-size: 16px;
-      color: var(--mid);
-      line-height: 1.7;
-    }
-    .hero-cta { margin-top: 20px; }
-
-    /* ── BUTTONS ── */
-    .btn {
-      display: block;
-      width: 100%;
-      background: var(--green);
-      color: var(--white);
-      font-weight: 700;
-      font-size: 16px;
-      padding: 18px 24px;
+      font-weight: 600;
+      padding: 10px 18px;
       border-radius: 8px;
       text-decoration: none;
-      text-align: center;
-      min-height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background .15s;
+      white-space: nowrap;
+      transition: border-color 0.15s, color 0.15s;
     }
-    .btn:hover { background: #15803d; }
-    .btn-inline {
-      display: inline-flex;
-      width: auto;
-      padding: 16px 28px;
-      font-size: 15px;
-      min-height: 52px;
-    }
-    .btn-ghost {
-      background: transparent;
-      border: 2px solid rgba(255,255,255,.3);
-      font-size: 14px;
-      min-height: 48px;
-      padding: 12px 20px;
-    }
-    .btn-ghost:hover { background: rgba(255,255,255,.08); }
-
-    /* ── DIVIDER ── */
-    hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
-
-    /* ── HEADINGS ── */
-    h2 {
-      font-family: 'Merriweather', serif;
-      font-size: clamp(20px, 5vw, 28px);
-      font-weight: 900;
-      color: var(--dark);
-      line-height: 1.25;
-      margin-bottom: 10px;
-      letter-spacing: -.3px;
-    }
-    h3 {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--mid);
-      margin-bottom: 18px;
-      margin-top: -4px;
-    }
-    p { margin-bottom: 16px; color: var(--mid); line-height: 1.75; }
-    p strong { color: var(--black); }
-
-    /* ── CALLOUT ── */
-    .callout {
-      background: var(--accent-light);
-      border-left: 4px solid var(--accent);
-      padding: 18px 20px;
-      border-radius: 0 8px 8px 0;
-      margin: 24px 0;
-    }
-    .callout p { margin: 0; color: var(--dark); font-weight: 500; font-size: 15px; line-height: 1.6; }
-
-    /* ── SELF-RECOGNITION HOOK ── */
-    .hook-line {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px 18px;
-      margin: 20px 0;
-      font-size: 15px;
-      color: var(--mid);
-      font-style: italic;
-      line-height: 1.6;
-    }
-
-    /* ── STEPS ── */
-    .steps { margin: 24px 0; }
-    .step { display: flex; gap: 16px; margin-bottom: 18px; align-items: flex-start; }
-    .step-num {
-      width: 34px; height: 34px; min-width: 34px;
-      background: var(--dark);
-      color: var(--white);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 13px;
-    }
-    .step-body strong { display: block; font-size: 15px; color: var(--dark); margin-bottom: 3px; }
-    .step-body span { font-size: 14px; color: var(--muted); }
-
-    /* ── STATS BAR ── */
-    .stats-bar {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 24px 0;
-    }
-    .stat-cell { background: var(--white); padding: 20px 12px; text-align: center; }
-    .stat-num { font-size: 26px; font-weight: 800; color: var(--dark); }
-    .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.3; }
-    .stats-note { font-size: 11px; color: var(--muted); margin-top: 8px; }
-
-    /* ── TABLE ── */
-    .table-wrap {
-      overflow-x: auto;
-      margin: 20px 0;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      -webkit-overflow-scrolling: touch;
-    }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 400px; }
-    thead { background: var(--dark); color: var(--white); }
-    thead th {
-      padding: 12px 14px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 11px;
-      letter-spacing: .5px;
-      text-transform: uppercase;
-    }
-    tbody tr { border-bottom: 1px solid var(--border); }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr.win-row { background: var(--green-light); }
-    tbody td { padding: 14px; vertical-align: middle; color: var(--mid); }
-    tbody tr.win-row td { color: var(--dark); }
-    .firm-name { font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .badge {
-      background: var(--green); color: white;
-      font-size: 9px; font-weight: 800;
-      padding: 2px 6px; border-radius: 20px;
-      letter-spacing: .5px; white-space: nowrap;
-    }
-    .rpill {
-      font-weight: 700; font-size: 13px;
-      padding: 3px 10px; border-radius: 20px;
-      display: inline-block; color: white;
-    }
-    .rpill-g { background: var(--green); }
-    .rpill-y { background: #ca8a04; }
-    .rpill-m { background: var(--muted); }
-    .ptag {
-      font-size: 11px; font-weight: 700;
-      padding: 3px 8px; border-radius: 4px; white-space: nowrap;
-    }
-    .ptag-a { background: var(--green-light); color: var(--green); }
-    .ptag-u { background: #fee2e2; color: var(--red); }
-    .table-note { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
-
-    /* ── POST-TABLE CTA ── */
-    .post-table-cta {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-      margin: 8px 0 28px;
-    }
-    .ptc-text strong { display: block; font-size: 15px; color: var(--dark); margin-bottom: 4px; }
-    .ptc-text span { font-size: 13px; color: var(--muted); }
-    .ptc-cta { margin-top: 14px; }
-    .ptc-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; }
-
-    /* ── WINNER CARD ── */
-    .winner-card {
-      border: 2px solid var(--green);
-      border-radius: 12px;
-      padding: 28px 20px;
-      margin: 24px 0;
-      position: relative;
-    }
-    .winner-label {
-      position: absolute; top: -12px; left: 20px;
-      background: var(--green); color: white;
-      font-size: 10px; font-weight: 800;
-      padding: 3px 12px; border-radius: 20px;
-      letter-spacing: .8px; text-transform: uppercase;
-    }
-    .winner-card h2 { margin-bottom: 6px; }
-    .winner-card h3 { margin-bottom: 14px; }
-    .feat-list { list-style: none; margin: 14px 0 20px; }
-    .feat-list li {
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 15px; color: var(--mid);
-      display: flex; align-items: flex-start; gap: 10px;
-      line-height: 1.5;
-    }
-    .feat-list li:last-child { border-bottom: none; }
-    .feat-list li::before { content: "■"; color: var(--green); font-size: 11px; margin-top: 4px; flex-shrink: 0; }
-    .feat-list li strong { color: var(--dark); }
-
-    /* ── TESTIMONIALS ── */
-    .testimonials { display: flex; flex-direction: column; gap: 14px; margin: 24px 0; }
-    .testimonial {
-      background: var(--bg);
-      border-left: 3px solid var(--gold);
-      padding: 18px 18px;
-      border-radius: 0 8px 8px 0;
-    }
-    .t-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .t-avatar {
-      width: 38px; height: 38px; min-width: 38px;
-      border-radius: 50%;
-      background: var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-    }
-    .t-name { font-size: 14px; font-weight: 700; color: var(--dark); display: block; }
-    .t-meta { font-size: 12px; color: var(--muted); }
-    .t-text {
-      font-size: 15px; color: var(--dark);
-      font-style: italic; line-height: 1.65;
-      margin-bottom: 10px;
-    }
-    .t-verified {
-      font-size: 11px; font-weight: 700;
-      color: var(--green); background: var(--green-light);
-      padding: 2px 8px; border-radius: 20px;
-      display: inline-block; margin-bottom: 6px;
-    }
-    .t-payout {
-      display: inline-block;
-      background: var(--green-light); color: var(--green);
-      font-size: 12px; font-weight: 700;
-      padding: 3px 10px; border-radius: 20px;
-    }
-
-    /* ── FAQ ── */
-    .faq { margin: 24px 0; }
-    .faq-item { border-bottom: 1px solid var(--border); padding: 22px 0; }
-    .faq-item:first-child { border-top: 1px solid var(--border); }
-    .faq-q {
-      font-size: 16px; font-weight: 700;
-      color: var(--dark); margin-bottom: 10px;
-      display: flex; align-items: flex-start; gap: 10px;
-      line-height: 1.4;
-    }
-    .faq-q-label {
-      background: var(--dark); color: white;
-      font-size: 10px; font-weight: 800;
-      padding: 3px 7px; border-radius: 4px;
-      margin-top: 2px; flex-shrink: 0;
-    }
-    .faq-a { font-size: 15px; color: var(--mid); line-height: 1.7; padding-left: 30px; }
-
-    /* ── CTA BLOCK ── */
-    .cta-block {
-      background: var(--dark);
-      color: var(--white);
-      border-radius: 14px;
-      padding: 36px 24px;
-      text-align: center;
-      margin: 40px 0;
-    }
-    .cta-block h2 { color: var(--white); margin-bottom: 8px; font-size: clamp(20px, 5vw, 26px); }
-    .cta-asym {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 20px 0 24px;
-    }
-    .asym-card {
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.15);
-      border-radius: 10px;
-      padding: 16px 14px;
-    }
-    .asym-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: .5; margin-bottom: 6px; }
-    .asym-val { font-size: 20px; font-weight: 800; line-height: 1.1; }
-    .asym-card.bad .asym-val { color: #fca5a5; }
-    .asym-card.good .asym-val { color: #86efac; }
-    .asym-detail { font-size: 11px; opacity: .55; margin-top: 5px; line-height: 1.4; }
-    .cta-bullets {
-      display: flex; flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px 16px;
-      margin-bottom: 24px;
-    }
-    .cta-bul {
-      font-size: 13px; color: rgba(255,255,255,.8);
-      display: flex; align-items: center; gap: 5px;
-    }
-    .cta-bul::before { content: "■"; color: var(--gold); font-size: 9px; }
-    .cta-disc {
-      margin-top: 18px;
-      font-size: 11px;
-      color: rgba(255,255,255,.35);
-      line-height: 1.5;
-    }
-
-    /* ── STICKY BAR ── */
-    .sticky-bar {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: var(--dark);
-      border-top: 1px solid rgba(255,255,255,.1);
-      padding: 10px 16px;
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      z-index: 200;
-    }
-    .sb-text { color: white; line-height: 1.3; }
-    .sb-text strong { display: block; font-size: 14px; }
-    .sb-text span { font-size: 11px; opacity: .6; }
-    .sb-btn {
-      background: var(--green); color: white;
-      font-weight: 700; font-size: 13px;
-      padding: 11px 16px; border-radius: 6px;
-      text-decoration: none; white-space: nowrap;
-      min-height: 44px; display: flex;
-      align-items: center;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 24px 20px;
-      max-width: 720px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .footer-logo { font-family: 'Merriweather', serif; font-weight: 900; font-size: 15px; color: var(--dark); margin-bottom: 6px; }
-    .footer-text { font-size: 12px; color: var(--muted); line-height: 1.6; max-width: 420px; margin: 0 auto; }
-
-    /* ── MOBILE ── */
-    @media (max-width: 640px) {
-      .math-cards { grid-template-columns: 1fr; }
-      .mc-number { font-size: 40px; }
-      .stats-bar { grid-template-columns: 1fr; }
-      .stat-num { font-size: 30px; }
-      .cta-asym { grid-template-columns: 1fr; }
-      .asym-val { font-size: 22px; }
-      thead th:nth-child(4), tbody td:nth-child(4) { display: none; }
-      .sticky-bar { display: flex; }
-      .btn { font-size: 17px; }
-    }
-
-    /* ── DESKTOP ── */
-    @media (min-width: 641px) {
-      html { font-size: 16px; }
-      .btn { display: inline-flex; width: auto; padding: 16px 32px; }
-      .sticky-bar { display: none !important; }
-      .post-table-cta { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-      .ptc-cta { margin-top: 0; }
-      .ptc-note { text-align: left; }
+    .btn:hover { border-color: #4CAF7D; color: #4CAF7D; }
+    .btn.amber:hover { border-color: #C9A84C; color: #C9A84C; }
+    @media (max-width: 540px) {
+      .card { grid-template-columns: 1fr; }
+      .btn { width: 100%; justify-content: center; }
     }
   </style>
 </head>
 <body>
-
-<!-- HEADER -->
-<header class="site-header">
-  <div class="site-header-inner">
-    <div class="logo">Funded<span>Trader</span>Report</div>
-    <div class="header-tag">Independent Research</div>
+  <div class="header">
+    <div class="label">GetLeveraged · Internal</div>
+    <h1>LP <span>Mockups</span></h1>
+    <p class="sub">Landing page concepts for the "Why are you trading your own money?" campaign</p>
   </div>
-</header>
 
-<div class="page">
+  <div class="grid">
 
-  <!-- HERO -->
-  <p class="article-label">Independent Analysis · April 2026 · Updated Weekly</p>
-
-  <div class="hero">
-    <div class="trust-pill">
-      <div class="trust-pill-dot"></div>
-      1,300+ new traders funded every week
-    </div>
-
-    <h1>There Are Firms That Will Fund You $100,000 to Trade. Here's Who Wins.</h1>
-
-    <div class="hero-legitimacy">
-      This model has existed for institutional traders for 30 years. What changed is access — once requiring $50,000+ minimums, now available from <strong>$8.88</strong>.
-    </div>
-
-    <!-- MATH BLOCK — above the fold -->
-    <div class="math-block">
-      <div class="math-eyebrow">Same skill · Same market · Same 10% month</div>
-      <div class="math-cards">
-        <div class="math-card">
-          <div class="mc-label">Trading your own $5K</div>
-          <div class="mc-number">$500</div>
-          <div class="mc-detail">100% at risk<br>100% yours — of a small account</div>
+    <div class="card">
+      <div>
+        <div class="card-tag">Concept A · Bridge/Editorial</div>
+        <div class="card-title">FundedTraderReport</div>
+        <div class="card-desc">
+          Independent editorial review angle. Ranked comparison of prop firms.
+          Educates cold traffic on the category → drives to Turbo purchase.
         </div>
-        <div class="math-card win">
-          <div class="mc-label">Funded with $100K</div>
-          <div class="mc-number">$6,400</div>
-          <div class="mc-detail">Your downside: <strong>$8.88</strong><br>80% payout on $100K</div>
+        <div class="card-url">orgad.fun/lvgd/a</div>
+      </div>
+      <a href="/lvgd/a" class="btn" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View
+      </a>
+    </div>
+
+    <div class="card">
+      <div>
+        <div class="card-tag amber">Concept B · Affiliate/Dark</div>
+        <div class="card-title">FundedInsider</div>
+        <div class="card-desc">
+          Traditional affiliate style. Dark premium design. Personal "my #1 pick"
+          angle. Minimal copy, single CTA. Similar to Leveraged brand colors.
         </div>
+        <div class="card-url">orgad.fun/lvgd/b</div>
       </div>
-      <div class="math-verdict">12x the result. <em>Zero additional skill required.</em></div>
+      <a href="/lvgd/b" class="btn amber" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View
+      </a>
     </div>
 
-    <p class="hero-sub">The difference isn't talent. It's whose capital you're using. We compared every major prop firm operating in 2026 — here's the full ranking.</p>
-
-    <div class="hero-cta">
-      <a href="#comparison" class="btn">Show Me the Full Comparison ↓</a>
-    </div>
   </div>
-
-  <hr />
-
-  <!-- SECTION 1: THE PROBLEM -->
-  <h2>The Worst Deal in Trading — And Almost Everyone Takes It</h2>
-  <h3>If you're risking your own capital, the math is working against you every day</h3>
-
-  <p>Most retail traders have never questioned the default: put up your own money, absorb 100% of the downside, collect 100% of the upside — on an account too small to generate life-changing returns.</p>
-
-  <div class="hook-line">
-    If you've ever watched your account drop $300 on a bad morning and thought "I can't keep doing this" — you already know the problem.
-  </div>
-
-  <p>It sounds fair until you compare it to the alternative. The math above assumes identical skill, identical strategy, identical market conditions. The only variable is who owns the capital.</p>
-
-  <div class="callout">
-    <p>"Trading your own money in 2026 is like driving your own car for Uber when they're offering you a company vehicle — for $8.88."</p>
-  </div>
-
-  <p>The prop firm model flips this entirely. You prove you can trade through a simulated challenge. Pass it, and you get funded with real firm capital — typically $25K to $200K. You keep 70–80% of profits. The firm absorbs the downside. <strong>That filter is what makes the payouts real.</strong></p>
-
-  <hr id="comparison" />
-
-  <!-- SECTION 2: THE MODEL -->
-  <h2>How the Funded Model Works</h2>
-  <h3>Four steps from your first dollar to a funded six-figure account</h3>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <strong>Pay a small entry fee</strong>
-        <span>Access a simulated trading challenge — as low as $8.88 with the #1 firm in our review.</span>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <strong>Pass the challenge</strong>
-        <span>Trade the simulation, hit the profit target, stay within the drawdown limits. No interview, no degree required.</span>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <strong>Get funded</strong>
-        <span>Receive a real account — $25K to $200K — backed by firm capital. Not yours.</span>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-body">
-        <strong>Trade and collect</strong>
-        <span>Keep 70–80% of every dollar you make. Request payouts whenever you want. Repeat.</span>
-      </div>
-    </div>
-  </div>
-
-  <hr />
-
-  <!-- SECTION 3: VALIDATION -->
-  <h2>This Isn't Fringe. It's the Fastest-Growing Segment in Retail Trading.</h2>
-
-  <div class="stats-bar">
-    <div class="stat-cell">
-      <div class="stat-num">1,300+</div>
-      <div class="stat-lbl">New traders funded per week</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-num">100K+</div>
-      <div class="stat-lbl">Funded accounts globally</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-num">$8.88</div>
-      <div class="stat-lbl">Lowest entry cost available</div>
-    </div>
-  </div>
-  <p class="stats-note">Source: GetLeveraged internal data, April 2026. Entry costs keep dropping — $8.88 is the floor we've seen yet.</p>
-
-  <p>We reviewed every major prop firm currently operating. We scored on entry cost, payout %, pay structure (upfront vs. after you pass), rule fairness, and payout speed. Here's the full ranking.</p>
-
-  <!-- SECTION 4: TABLE -->
-  <h2>2026 Prop Firm Rankings</h2>
-  <h3>Composite score: entry cost · payout % · pay structure · rule fairness · payout speed</h3>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Firm</th>
-          <th>Entry ($100K)</th>
-          <th>Payout</th>
-          <th>Pay Structure</th>
-          <th>Score</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="win-row">
-          <td><div class="firm-name">GetLeveraged <span class="badge">#1</span></div></td>
-          <td><strong>$8.88</strong></td>
-          <td><strong>80%</strong></td>
-          <td><span class="ptag ptag-a">Pay After You Pass</span></td>
-          <td><span class="rpill rpill-g">9.8</span></td>
-        </tr>
-        <tr>
-          <td><div class="firm-name">FTMO</div></td>
-          <td>$155</td><td>80%</td>
-          <td><span class="ptag ptag-u">Upfront</span></td>
-          <td><span class="rpill rpill-y">8.1</span></td>
-        </tr>
-        <tr>
-          <td><div class="firm-name">FunderPro</div></td>
-          <td>$65</td><td>80%</td>
-          <td><span class="ptag ptag-u">Upfront</span></td>
-          <td><span class="rpill rpill-y">7.2</span></td>
-        </tr>
-        <tr>
-          <td><div class="firm-name">MyForexFunds</div></td>
-          <td>$99</td><td>75%</td>
-          <td><span class="ptag ptag-u">Upfront</span></td>
-          <td><span class="rpill rpill-m">7.4</span></td>
-        </tr>
-        <tr>
-          <td><div class="firm-name">The5ers</div></td>
-          <td>$39</td><td>50%</td>
-          <td><span class="ptag ptag-u">Upfront</span></td>
-          <td><span class="rpill rpill-m">6.9</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="table-note">Entry fees for comparable $100K tiers. Scores are composite across 5 dimensions. Data current April 2026, updated weekly.</p>
-
-  <!-- POST-TABLE CTA -->
-  <div class="post-table-cta">
-    <div class="ptc-text">
-      <strong>GetLeveraged wins on every metric that matters.</strong>
-      <span>Lowest entry. Highest score. Only pay-after-you-pass structure in the table.</span>
-    </div>
-    <div class="ptc-cta">
-      <a href="https://getleveraged.com/turbo-trade/" class="btn">Get Funded for $8.88 →</a>
-      <p class="ptc-note">Pay the rest only if you pass</p>
-    </div>
-  </div>
-
-  <hr />
-
-  <!-- WINNER CARD -->
-  <div class="winner-card">
-    <div class="winner-label">⭐ #1 Pick — April 2026</div>
-    <h2>Why GetLeveraged Ranks First</h2>
-    <h3>One structural difference that no other firm in our review has matched</h3>
-
-    <p>Every other firm charges the full fee upfront — before you've proven anything. Fail the challenge at FTMO and you're out $155 with nothing to show for it.</p>
-
-    <p>GetLeveraged restructured the risk entirely with their Turbo offer:</p>
-
-    <ul class="feat-list">
-      <li><strong>Start for $8.88</strong> — not $155, not $99. Eight dollars and eighty-eight cents.</li>
-      <li><strong>Trade the simulated challenge</strong> — same rules, same environment as any prop firm.</li>
-      <li><strong>Pay the rest only if you pass</strong> — full fee charged on success, not entry.</li>
-      <li><strong>Get funded with up to $100,000</strong> in real firm capital.</li>
-      <li><strong>Keep 80% of every dollar you make</strong> from day one of funding.</li>
-    </ul>
-
-    <p><strong>Worst-case scenario:</strong> you spend $8.88 and identify exactly where your risk management breaks down.<br>
-    <strong>Best-case scenario:</strong> you're managing a $100,000 account and collecting 80% of the profits.</p>
-
-    <p>No other firm in our review offers pay-after-you-pass at this scale. That one structural difference is why GetLeveraged holds the top spot — and why it's the obvious place to start.</p>
-  </div>
-
-  <!-- TESTIMONIALS -->
-  <div class="testimonials">
-    <div class="testimonial">
-      <div class="t-header">
-        <div class="t-avatar">🇬🇧</div>
-        <div>
-          <span class="t-name">James R.</span>
-          <span class="t-meta">United Kingdom · March 2026</span>
-        </div>
-      </div>
-      <span class="t-verified">✓ Verified funded trader</span>
-      <p class="t-text">"I passed in 11 days. I checked my account on a Tuesday morning and the money was just there. My total outlay was $8.88. I've since passed two more accounts."</p>
-      <span class="t-payout">First payout: £1,900</span>
-    </div>
-    <div class="testimonial">
-      <div class="t-header">
-        <div class="t-avatar">🇦🇺</div>
-        <div>
-          <span class="t-name">Marcus T.</span>
-          <span class="t-meta">Australia · February 2026</span>
-        </div>
-      </div>
-      <span class="t-verified">✓ Verified funded trader</span>
-      <p class="t-text">"I failed my first attempt at FTMO and was out $155 with nothing to show. With Leveraged I failed twice and I'm still only out $17.76. Third attempt I passed and got funded the same week."</p>
-      <span class="t-payout">Total spent before passing: $17.76</span>
-    </div>
-    <div class="testimonial">
-      <div class="t-header">
-        <div class="t-avatar">🇦🇪</div>
-        <div>
-          <span class="t-name">Khalid A.</span>
-          <span class="t-meta">UAE · April 2026</span>
-        </div>
-      </div>
-      <span class="t-verified">✓ Verified funded trader</span>
-      <p class="t-text">"I'd been watching funded trading for 6 months. The $8.88 removed my last excuse. Fear of paying and failing — gone. I passed on my second attempt."</p>
-      <span class="t-payout">First payout: $2,800</span>
-    </div>
-  </div>
-
-  <hr />
-
-  <!-- FAQ -->
-  <h2>Common Questions</h2>
-  <h3>The ones every new visitor asks — answered directly</h3>
-
-  <div class="faq">
-    <div class="faq-item">
-      <div class="faq-q"><span class="faq-q-label">Q</span>Is this legitimate, or is it a scam?</div>
-      <div class="faq-a">GetLeveraged has funded over 100,000 traders globally (internal data, April 2026). Payout certificates are publicly shareable. The prop trading model has been used by institutional desks for three decades — what changed is that retail access now exists at $8.88 instead of $50,000+.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q"><span class="faq-q-label">Q</span>What happens if I fail the challenge?</div>
-      <div class="faq-a">Your total exposure is $8.88. You can retry — most traders who eventually pass do so on their second or third attempt. Even two failed attempts cost less than $20 total. Compare that to FTMO where one failure costs $155 and you start over.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q"><span class="faq-q-label">Q</span>How hard is the challenge to pass?</div>
-      <div class="faq-a">The challenge is a simulated environment with a profit target (typically 8–10%) and a maximum drawdown limit. Following your risk rules consistently matters more than market timing. Discipline beats raw skill every time.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q"><span class="faq-q-label">Q</span>Why would a firm give me $100,000 to trade?</div>
-      <div class="faq-a">They keep 20% of everything you make. A profitable funded trader generates ongoing revenue for the firm at zero downside risk — the challenge filters out unprofitable traders before any firm capital is committed. Incentives are fully aligned.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q"><span class="faq-q-label">Q</span>How long does it take to get funded?</div>
-      <div class="faq-a">Most traders complete the challenge in 10–30 days. Some pass in 4 days. There's no time limit — you can take as long as you need as long as you stay within the drawdown rules.</div>
-    </div>
-  </div>
-
-  <hr />
-
-  <!-- FINAL CTA -->
-  <div class="cta-block">
-    <h2>The Math Makes the Decision for You</h2>
-
-    <div class="cta-asym">
-      <div class="asym-card bad">
-        <div class="asym-lbl">Worst case</div>
-        <div class="asym-val">$8.88</div>
-        <div class="asym-detail">You spend $8.88 and learn exactly where your risk management breaks down</div>
-      </div>
-      <div class="asym-card good">
-        <div class="asym-lbl">Best case</div>
-        <div class="asym-val">$100K account</div>
-        <div class="asym-detail">You pass. You get funded. You keep 80% of everything you make.</div>
-      </div>
-    </div>
-
-    <div class="cta-bullets">
-      <span class="cta-bul">Pay after you pass</span>
-      <span class="cta-bul">80% profit split from day one</span>
-      <span class="cta-bul">$100,000 funded account</span>
-      <span class="cta-bul">100,000+ traders funded</span>
-    </div>
-
-    <a href="https://getleveraged.com/turbo-trade/" class="btn" style="max-width:420px;margin:0 auto;">
-      Claim Your $100K Account — Start for $8.88
-    </a>
-
-    <p class="cta-disc">
-      Independent editorial review. FundedTraderReport earns a referral fee if you sign up — this does not influence our rankings or analysis. Trading involves risk of loss. Past results are not indicative of future performance.
-    </p>
-  </div>
-
-</div>
-
-<footer>
-  <div class="footer-logo">FundedTraderReport</div>
-  <p class="footer-text">Independent prop trading research and rankings. Not financial advice. Trading involves risk of loss. Data updated weekly, current April 2026.</p>
-</footer>
-
-<!-- STICKY BAR (mobile only, appears after 40% scroll) -->
-<div class="sticky-bar" id="stickyBar">
-  <div class="sb-text">
-    <strong>GetLeveraged · $100K Account</strong>
-    <span>Pay the rest only if you pass</span>
-  </div>
-  <a href="https://getleveraged.com/turbo-trade/" class="sb-btn">Start for $8.88 →</a>
-</div>
-
-<script>
-  const bar = document.getElementById('stickyBar');
-  let visible = false;
-  window.addEventListener('scroll', () => {
-    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-    if (pct > 0.4 && !visible) { visible = true; bar.style.display = 'flex'; }
-  }, { passive: true });
-</script>
-
 </body>
 </html>
