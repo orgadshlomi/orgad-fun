@@ -1,4 +1,8 @@
 {
+  "rewrites": [
+    { "source": "/lvgd", "destination": "/lvgd/index.html" },
+    { "source": "/lvgd/", "destination": "/lvgd/index.html" }
+  ],
   "crons": [
     {
       "path": "/api/fitness/notify",
