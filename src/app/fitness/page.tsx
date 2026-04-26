@@ -174,10 +174,14 @@ export default function FitnessDashboard() {
   const foodName = log?.breakfast_type
     ? (() => {
         try {
-          const items: Record<string, number> = JSON.parse(log.breakfast_type)
+          const parsed = JSON.parse(log.breakfast_type)
+          if (Array.isArray(parsed)) {
+            return parsed.map((e: { description: string }) => e.description).join(', ') || null
+          }
+          // legacy format
           return FOOD_ITEMS
-            .filter(i => (items[i.id] ?? 0) > 0)
-            .map(i => items[i.id] > 1 ? `${items[i.id]}× ${i.name}` : i.name)
+            .filter(i => (parsed[i.id] ?? 0) > 0)
+            .map(i => parsed[i.id] > 1 ? `${parsed[i.id]}× ${i.name}` : i.name)
             .join(', ') || null
         } catch { return null }
       })()
