@@ -1,4 +1,4 @@
-export const PLAN_START_DATE = '2026-04-19'
+export const PLAN_START_DATE = '2026-04-26'
 export const PLAN_START_WEIGHT = 78
 export const PLAN_TARGET_WEIGHT = 74
 export const PLAN_WEEKS = 6
