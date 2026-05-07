@@ -6,19 +6,5 @@
     { "source": "/lvgd/a/", "destination": "/lvgd/a/index.html" },
     { "source": "/lvgd/b", "destination": "/lvgd/b/index.html" },
     { "source": "/lvgd/b/", "destination": "/lvgd/b/index.html" }
-  ],
-  "crons": [
-    {
-      "path": "/api/fitness/notify",
-      "schedule": "0 5 * * *"
-    },
-    {
-      "path": "/api/fitness/notify",
-      "schedule": "0 12 * * *"
-    },
-    {
-      "path": "/api/fitness/notify",
-      "schedule": "0 17 * * *"
-    }
   ]
 }
