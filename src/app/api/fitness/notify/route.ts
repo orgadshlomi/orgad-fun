@@ -108,20 +108,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ok: true, type })
 }
 
-// Called by Vercel cron
+// Called by Vercel cron — disabled
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const hour = new Date().getUTCHours() + 3 // Israel time (UTC+3)
-  const type = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening'
-
-  const mockReq = new Request(req.url, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${process.env.CRON_SECRET}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type }),
-  })
-  return POST(mockReq as NextRequest)
+  return NextResponse.json({ ok: true, disabled: true })
 }
