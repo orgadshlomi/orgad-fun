@@ -5,6 +5,8 @@
     { "source": "/lvgd/a", "destination": "/lvgd/a/index.html" },
     { "source": "/lvgd/a/", "destination": "/lvgd/a/index.html" },
     { "source": "/lvgd/b", "destination": "/lvgd/b/index.html" },
-    { "source": "/lvgd/b/", "destination": "/lvgd/b/index.html" }
+    { "source": "/lvgd/b/", "destination": "/lvgd/b/index.html" },
+    { "source": "/lvgd-home-test", "destination": "/lvgd-home-test/index.html" },
+    { "source": "/lvgd-home-test/", "destination": "/lvgd-home-test/index.html" }
   ]
 }
