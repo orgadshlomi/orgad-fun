@@ -15,3 +15,18 @@ export function buildCheckoutUrl(startParam: string | null): string {
   })
   return `${CHECKOUT_BASE_URL}?${params.toString()}`
 }
+
+const WINBACK_DAYS = 14
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+
+export function isWinbackEligible(
+  createdAt: string,
+  clickedCheckoutAt: string | null,
+  winbackSentAt: string | null,
+  now: Date,
+): boolean {
+  if (clickedCheckoutAt !== null) return false
+  if (winbackSentAt !== null) return false
+  const daysSinceCreation = (now.getTime() - new Date(createdAt).getTime()) / MS_PER_DAY
+  return daysSinceCreation >= WINBACK_DAYS
+}

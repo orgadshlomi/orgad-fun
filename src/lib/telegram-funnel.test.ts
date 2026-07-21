@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseStartParam, buildCheckoutUrl } from './telegram-funnel'
+import { parseStartParam, buildCheckoutUrl, isWinbackEligible } from './telegram-funnel'
 
 describe('parseStartParam', () => {
   it('extracts the payload after /start', () => {
@@ -26,5 +26,25 @@ describe('buildCheckoutUrl', () => {
   it('falls back to "organic" content tag when there is no start param', () => {
     const url = buildCheckoutUrl(null)
     expect(url).toContain('utm_content=organic')
+  })
+})
+
+describe('isWinbackEligible', () => {
+  const NOW = new Date('2026-07-22T12:00:00Z')
+
+  it('is eligible exactly 14 days after creation with no click and no prior send', () => {
+    expect(isWinbackEligible('2026-07-08T12:00:00Z', null, null, NOW)).toBe(true)
+  })
+
+  it('is not eligible before 14 days have passed', () => {
+    expect(isWinbackEligible('2026-07-10T12:00:00Z', null, null, NOW)).toBe(false)
+  })
+
+  it('is not eligible if the user already clicked through to checkout', () => {
+    expect(isWinbackEligible('2026-07-08T12:00:00Z', '2026-07-09T12:00:00Z', null, NOW)).toBe(false)
+  })
+
+  it('is not eligible if a win-back was already sent', () => {
+    expect(isWinbackEligible('2026-07-08T12:00:00Z', null, '2026-07-21T12:00:00Z', NOW)).toBe(false)
   })
 })
