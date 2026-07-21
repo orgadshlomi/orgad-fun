@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leveraged - Page Not Found</title>
+<style>
+  @font-face {
+    font-family: "Suisse Intl";
+    src: url("/lvgd-404-test/assets/fonts/SuisseIntl-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Suisse Intl";
+    src: url("/lvgd-404-test/assets/fonts/SuisseIntl-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Suisse Intl";
+    src: url("/lvgd-404-test/assets/fonts/SuisseIntl-Semibold.woff2") format("woff2");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    --bg: #042820;
+    --mint: #9af5bd;
+    --mint-dim: rgba(154, 245, 189, 0.75);
+    --mint-faint: rgba(154, 245, 189, 0.16);
+    --border: #22513f;
+    --yellow: #ffee00;
+    --yellow-hover: #f3e400;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--mint);
+    font-family: "Suisse Intl", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 77px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    color: var(--mint);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .logo img {
+    display: block;
+    height: 34px;
+    width: auto;
+  }
+
+  nav.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  nav.main-nav a {
+    color: var(--mint-dim);
+    text-decoration: none;
+    font-size: 15px;
+  }
+
+  nav.main-nav a:hover { color: var(--mint); }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-shrink: 0;
+  }
+
+  .login-link {
+    color: var(--mint);
+    text-decoration: underline;
+    font-size: 15px;
+  }
+
+  .signup-btn {
+    background: var(--mint);
+    color: var(--bg);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .signup-btn:hover { background: #86e6ab; }
+
+  /* ---------- Background pattern ---------- */
+  .pattern-area {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    overflow: hidden;
+    min-height: 660px;
+    background-image:
+      radial-gradient(var(--mint-faint) 1px, transparent 1.4px);
+    background-size: 34px 34px;
+    background-position: 20px 20px;
+  }
+
+  .pattern-symbols {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(34, 1fr);
+    padding: 20px 20px 0;
+    pointer-events: none;
+  }
+
+  .pattern-symbols span {
+    font-size: 12px;
+    color: var(--mint-faint);
+    text-align: center;
+    line-height: 34px;
+  }
+
+  /* ---------- Content ---------- */
+  .content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 24px 96px;
+    gap: 40px;
+  }
+
+  .message {
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--mint);
+    text-align: center;
+    margin: 0;
+  }
+
+  .back-home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1392px;
+    height: 51px;
+    background: var(--yellow);
+    color: var(--bg);
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .back-home:hover { background: var(--yellow-hover); }
+
+  @media (max-width: 900px) {
+    nav.main-nav { display: none; }
+    header { padding: 0 20px; }
+    .message { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a href="#" class="logo" aria-label="Leveraged home">
+        <img src="/lvgd-404-test/assets/logo-light.svg" alt="Leveraged">
+      </a>
+
+      <nav class="main-nav">
+        <a href="#">Academy +</a>
+        <a href="#">Profit Calculator</a>
+        <a href="#">Knowledge Center</a>
+        <a href="#">Daily market reviews</a>
+        <a href="#">Quiz</a>
+      </nav>
+
+      <div class="nav-right">
+        <a href="#" class="login-link">Log In</a>
+        <a href="#" class="signup-btn">Sign Up</a>
+      </div>
+    </header>
+
+    <div class="pattern-area">
+      <div class="pattern-symbols" id="patternSymbols"></div>
+
+      <div class="content">
+        <p class="message">The page you're looking for doesn't exist.</p>
+        <a href="#" class="back-home">Back home</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Decorative currency-symbol background grid, matching the Figma pattern.
+    const symbols = ['$', '£', '€', '₿'];
+    const container = document.getElementById('patternSymbols');
+    const cols = 34;
+    const rows = 20;
+    const cellCount = cols * rows;
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i < cellCount; i++) {
+      const cell = document.createElement('span');
+      // Sparse, semi-random placement so it reads as a loose grid, not a solid block.
+      if (Math.random() < 0.16) {
+        cell.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      }
+      fragment.appendChild(cell);
+    }
+    container.appendChild(fragment);
+  </script>
+</body>
+</html>

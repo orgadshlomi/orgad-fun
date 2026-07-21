@@ -7,6 +7,12 @@
     { "source": "/lvgd/b", "destination": "/lvgd/b/index.html" },
     { "source": "/lvgd/b/", "destination": "/lvgd/b/index.html" },
     { "source": "/lvgd-home-test", "destination": "/lvgd-home-test/index.html" },
-    { "source": "/lvgd-home-test/", "destination": "/lvgd-home-test/index.html" }
+    { "source": "/lvgd-home-test/", "destination": "/lvgd-home-test/index.html" },
+    { "source": "/lvgd-404-test", "destination": "/lvgd-404-test/index.html" },
+    { "source": "/lvgd-404-test/", "destination": "/lvgd-404-test/index.html" },
+    { "source": "/lvgd-quiz-test", "destination": "/lvgd-quiz-test/index.html" },
+    { "source": "/lvgd-quiz-test/", "destination": "/lvgd-quiz-test/index.html" },
+    { "source": "/lvgd-prototypes", "destination": "/lvgd-prototypes/index.html" },
+    { "source": "/lvgd-prototypes/", "destination": "/lvgd-prototypes/index.html" }
   ]
 }
