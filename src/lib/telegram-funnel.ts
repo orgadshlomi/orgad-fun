@@ -60,7 +60,7 @@ export function offerMessage(): string {
   return [
     'The Leveraged Crypto Challenge: prove your edge on 100+ crypto pairs, then get funded.',
     '',
-    '- Entry: $8.88 — pay the full fee only after you pass',
+    '- Entry: $8.88, pay the full fee only after you pass',
     '- Target: 6% to get funded, up to $150k',
     '- Keep 80% of the profit split, biweekly payouts',
     '',
@@ -76,4 +76,4 @@ export function offerKeyboard(startParam: string | null, telegramId: number): In
 }
 
 export const WINBACK_MESSAGE =
-  "Still thinking about it? The Leveraged Crypto Challenge is still $8.88 to start — pay the rest only if you pass. Tap below when you're ready."
+  "Still thinking about it? The Leveraged Crypto Challenge is still $8.88 to start, pay the rest only if you pass. Tap below when you're ready."
