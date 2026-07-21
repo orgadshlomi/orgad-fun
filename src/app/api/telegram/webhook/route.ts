@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
-import { parseStartParam, WELCOME_MESSAGE, Q1_KEYBOARD } from '@/lib/telegram-funnel'
+import { parseStartParam, isValidWebhookSecret, WELCOME_MESSAGE, Q1_KEYBOARD } from '@/lib/telegram-funnel'
 import { sendMessage, answerCallbackQuery } from '@/lib/telegram-api'
 
 type TelegramUpdate = {
@@ -21,7 +21,10 @@ async function handleStart(update: NonNullable<TelegramUpdate['message']>) {
   const startParam = parseStartParam(update.text ?? '')
   const telegramId = update.from.id
 
-  await supabase.from('telegram_leads').upsert(
+  // First-touch attribution: ignoreDuplicates means a repeat /start keeps the
+  // original start_param/username. Best-effort write — a DB hiccup here must
+  // never block the welcome message below.
+  const { error } = await supabase.from('telegram_leads').upsert(
     {
       telegram_id: telegramId,
       username: update.from.username ?? null,
@@ -30,13 +33,16 @@ async function handleStart(update: NonNullable<TelegramUpdate['message']>) {
     },
     { onConflict: 'telegram_id', ignoreDuplicates: true },
   )
+  if (error) {
+    console.error('telegram_leads upsert failed', error)
+  }
 
   await sendMessage(update.chat.id, WELCOME_MESSAGE, Q1_KEYBOARD)
 }
 
 export async function POST(req: NextRequest) {
   const secret = req.headers.get('x-telegram-bot-api-secret-token')
-  if (secret !== process.env.TELEGRAM_WEBHOOK_SECRET) {
+  if (!isValidWebhookSecret(secret, process.env.TELEGRAM_WEBHOOK_SECRET)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

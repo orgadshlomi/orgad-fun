@@ -31,6 +31,14 @@ export function isWinbackEligible(
   return daysSinceCreation >= WINBACK_DAYS
 }
 
+export function isValidWebhookSecret(
+  headerValue: string | null,
+  expectedSecret: string | undefined,
+): boolean {
+  if (!expectedSecret) return false
+  return headerValue === expectedSecret
+}
+
 export type InlineButton = { text: string; callback_data?: string; url?: string }
 
 export const WELCOME_MESSAGE =

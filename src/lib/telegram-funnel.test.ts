@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseStartParam, buildCheckoutUrl, isWinbackEligible } from './telegram-funnel'
+import { parseStartParam, buildCheckoutUrl, isWinbackEligible, isValidWebhookSecret } from './telegram-funnel'
 
 describe('parseStartParam', () => {
   it('extracts the payload after /start', () => {
@@ -46,5 +46,23 @@ describe('isWinbackEligible', () => {
 
   it('is not eligible if a win-back was already sent', () => {
     expect(isWinbackEligible('2026-07-08T12:00:00Z', null, '2026-07-21T12:00:00Z', NOW)).toBe(false)
+  })
+})
+
+describe('isValidWebhookSecret', () => {
+  it('accepts a header that matches the expected secret', () => {
+    expect(isValidWebhookSecret('correct-secret', 'correct-secret')).toBe(true)
+  })
+
+  it('rejects a header that does not match', () => {
+    expect(isValidWebhookSecret('wrong-secret', 'correct-secret')).toBe(false)
+  })
+
+  it('rejects a missing header', () => {
+    expect(isValidWebhookSecret(null, 'correct-secret')).toBe(false)
+  })
+
+  it('rejects when the expected secret is not configured', () => {
+    expect(isValidWebhookSecret('anything', undefined)).toBe(false)
   })
 })
