@@ -80,6 +80,60 @@
     padding: 28px 20px 60px;
   }
 
+  /* ---------- Intro screen ---------- */
+  .intro { text-align: center; padding-top: 12px; }
+
+  .intro .kicker {
+    display: inline-block;
+    color: var(--bg);
+    background: var(--yellow);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+  }
+
+  .intro h1 {
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+    line-height: 1.25;
+    margin: 0 0 16px;
+  }
+
+  .intro p {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--mint);
+    margin: 0 0 28px;
+  }
+
+  .intro .fine-print {
+    font-size: 13px;
+    color: var(--mint-dim);
+    margin-top: 14px;
+  }
+
+  .btn-primary {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: var(--yellow);
+    color: var(--bg);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 15px;
+    border-radius: 999px;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--yellow-hover); }
+
   .progress-track {
     width: 100%;
     height: 6px;
@@ -312,6 +366,8 @@
   .retake-link:hover { color: var(--mint-dim); }
 
   @media (min-width: 640px) {
+    .intro h1 { font-size: 34px; }
+    .intro p { font-size: 16px; }
     .question h1 { font-size: 28px; }
     .result-headline { font-size: 36px; }
   }
@@ -412,7 +468,7 @@
     const EXPERIENCE_LABEL = { new: "brand-new", some: "developing", experienced: "experienced", pro: "professional-level" };
     const EXPERIENCE_TIER_INDEX = { new: 0, some: 1, experienced: 2, pro: 3 };
 
-    const state = { step: 0, answers: {} };
+    const state = { step: -1, answers: {} };
     const app = document.getElementById("app");
 
     function trackEvent(name, params) {
@@ -421,13 +477,32 @@
     }
 
     function render() {
-      if (state.step < QUESTIONS.length) {
+      if (state.step === -1) {
+        renderIntro();
+      } else if (state.step < QUESTIONS.length) {
         renderQuestion(state.step);
       } else if (state.step === QUESTIONS.length) {
         renderCalculating();
       } else {
         renderResult();
       }
+    }
+
+    function renderIntro() {
+      app.innerHTML = `
+        <div class="intro">
+          <span class="kicker">Find Your Challenge</span>
+          <h1>Which trading challenge is actually right for you?</h1>
+          <p>Turbo, Crypto Challenge, or Sprint each fit a different kind of trader. Answer 5 quick questions and we'll match you to the right one, with the account size to match.</p>
+          <button class="btn-primary" id="beginBtn">Find My Challenge</button>
+          <p class="fine-print">Takes about 60 seconds.</p>
+        </div>
+      `;
+      document.getElementById("beginBtn").addEventListener("click", () => {
+        trackEvent("QuizStarted");
+        state.step = 0;
+        render();
+      });
     }
 
     function renderQuestion(index) {
@@ -444,8 +519,6 @@
           </div>
         </div>
       `;
-
-      if (index === 0) trackEvent("QuizStarted");
 
       const backBtn = document.getElementById("backBtn");
       if (backBtn) backBtn.addEventListener("click", () => { state.step -= 1; render(); });
@@ -540,7 +613,7 @@
 
       document.getElementById("ctaBtn").addEventListener("click", () => trackEvent("QuizCTAClicked", { productKey, tier }));
       document.getElementById("retakeBtn").addEventListener("click", () => {
-        state.step = 0;
+        state.step = -1;
         state.answers = {};
         render();
       });
