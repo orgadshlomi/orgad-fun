@@ -26,20 +26,41 @@ export async function GET(req: NextRequest) {
   )
 
   for (const lead of eligible) {
-    await sendMessage(
-      lead.telegram_id,
-      WINBACK_MESSAGE,
-      offerKeyboard(lead.start_param, lead.telegram_id),
-    )
-    const { error: updateError } = await supabase
+    // Claim before send: the conditional update is the atomic gate. If two
+    // overlapping invocations (manual re-trigger, duplicate deploy hitting
+    // this URL) both select the same lead, only one can win this update
+    // (`.is('winback_sent_at', null)` matches 0 rows for the loser), so only
+    // one ever sends. Sending first and claiming after (the original order)
+    // let both invocations send before either claimed anything.
+    const { data: claimed, error: claimError } = await supabase
       .from('telegram_leads')
       .update({ winback_sent_at: now.toISOString() })
       .eq('telegram_id', lead.telegram_id)
-    if (updateError) {
-      // If this write fails, tomorrow's run will re-select the same lead and
-      // resend — acceptable for a v1 win-back (favors a resend over silently
-      // dropping the lead), just log it for visibility.
-      console.error('telegram_leads winback_sent_at update failed', updateError)
+      .is('winback_sent_at', null)
+      .select('telegram_id')
+
+    if (claimError) {
+      console.error('telegram_leads winback_sent_at claim failed', claimError)
+      continue
+    }
+    if (!claimed || claimed.length === 0) {
+      // Already claimed by a concurrent run — skip to avoid a duplicate send.
+      continue
+    }
+
+    try {
+      await sendMessage(
+        lead.telegram_id,
+        WINBACK_MESSAGE,
+        offerKeyboard(lead.start_param, lead.telegram_id),
+      )
+    } catch (err) {
+      // sendMessage already swallows HTTP-level failures internally; this
+      // catches the rarer throw (missing token, network-level fetch error)
+      // so one bad send can't abort the rest of today's batch. The lead is
+      // already claimed, so it won't retry tomorrow — acceptable for a v1
+      // win-back where duplicate sends are worse than an occasional miss.
+      console.error('sendMessage threw for winback', err)
     }
   }
 
