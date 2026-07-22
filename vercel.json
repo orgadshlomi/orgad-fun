@@ -16,5 +16,11 @@
     { "source": "/lvgd-prototypes/", "destination": "/lvgd-prototypes/index.html" },
     { "source": "/lvgd-quiz-premium", "destination": "/lvgd-quiz-premium/index.html" },
     { "source": "/lvgd-quiz-premium/", "destination": "/lvgd-quiz-premium/index.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/telegram/cron-winback",
+      "schedule": "0 10 * * *"
+    }
   ]
 }
