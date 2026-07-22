@@ -8,5 +8,11 @@
     { "source": "/lvgd/b/", "destination": "/lvgd/b/index.html" },
     { "source": "/lvgd-home-test", "destination": "/lvgd-home-test/index.html" },
     { "source": "/lvgd-home-test/", "destination": "/lvgd-home-test/index.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/telegram/cron-winback",
+      "schedule": "0 10 * * *"
+    }
   ]
 }
