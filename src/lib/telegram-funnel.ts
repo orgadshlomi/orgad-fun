@@ -39,6 +39,14 @@ export function isValidWebhookSecret(
   return headerValue === expectedSecret
 }
 
+export function isValidCronSecret(
+  authHeader: string | null,
+  expectedSecret: string | undefined,
+): boolean {
+  if (!expectedSecret) return false
+  return authHeader === `Bearer ${expectedSecret}`
+}
+
 export type InlineButton = { text: string; callback_data?: string; url?: string }
 
 export const WELCOME_MESSAGE =

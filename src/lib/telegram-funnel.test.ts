@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { parseStartParam, buildCheckoutUrl, isWinbackEligible, isValidWebhookSecret } from './telegram-funnel'
+import {
+  parseStartParam,
+  buildCheckoutUrl,
+  isWinbackEligible,
+  isValidWebhookSecret,
+  isValidCronSecret,
+} from './telegram-funnel'
 
 describe('parseStartParam', () => {
   it('extracts the payload after /start', () => {
@@ -64,5 +70,23 @@ describe('isValidWebhookSecret', () => {
 
   it('rejects when the expected secret is not configured', () => {
     expect(isValidWebhookSecret('anything', undefined)).toBe(false)
+  })
+})
+
+describe('isValidCronSecret', () => {
+  it('accepts a correctly-formatted bearer header matching the secret', () => {
+    expect(isValidCronSecret('Bearer correct-secret', 'correct-secret')).toBe(true)
+  })
+
+  it('rejects a header with the wrong secret', () => {
+    expect(isValidCronSecret('Bearer wrong-secret', 'correct-secret')).toBe(false)
+  })
+
+  it('rejects a missing header', () => {
+    expect(isValidCronSecret(null, 'correct-secret')).toBe(false)
+  })
+
+  it('rejects when the expected secret is not configured', () => {
+    expect(isValidCronSecret('Bearer anything', undefined)).toBe(false)
   })
 })
