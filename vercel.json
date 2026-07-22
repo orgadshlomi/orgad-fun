@@ -13,6 +13,8 @@
     { "source": "/lvgd-quiz-test", "destination": "/lvgd-quiz-test/index.html" },
     { "source": "/lvgd-quiz-test/", "destination": "/lvgd-quiz-test/index.html" },
     { "source": "/lvgd-prototypes", "destination": "/lvgd-prototypes/index.html" },
-    { "source": "/lvgd-prototypes/", "destination": "/lvgd-prototypes/index.html" }
+    { "source": "/lvgd-prototypes/", "destination": "/lvgd-prototypes/index.html" },
+    { "source": "/lvgd-quiz-premium", "destination": "/lvgd-quiz-premium/index.html" },
+    { "source": "/lvgd-quiz-premium/", "destination": "/lvgd-quiz-premium/index.html" }
   ]
 }
