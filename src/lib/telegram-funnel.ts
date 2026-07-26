@@ -84,13 +84,8 @@ export function offerMessage(): string {
   ].join('\n')
 }
 
-const GO_URL_BASE = process.env.GO_URL_BASE ?? 'https://orgad.fun/api/telegram/go'
-
-export function offerKeyboard(startParam: string | null, telegramId: number): InlineButton[][] {
-  const goUrl = new URL(GO_URL_BASE)
-  goUrl.searchParams.set('tid', String(telegramId))
-  if (startParam) goUrl.searchParams.set('start', startParam)
-  return [[{ text: 'Start My Challenge →', url: goUrl.toString() }]]
+export function offerKeyboard(startParam: string | null): InlineButton[][] {
+  return [[{ text: 'Start My Challenge →', url: buildCheckoutUrl(startParam) }]]
 }
 
 export const WINBACK_MESSAGE =

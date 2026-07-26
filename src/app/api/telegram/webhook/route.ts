@@ -93,7 +93,7 @@ async function handleCallback(cq: NonNullable<TelegramUpdate['callback_query']>)
     await sendMessage(
       chatId,
       offerMessage(),
-      offerKeyboard(lead?.start_param ?? null, telegramId),
+      offerKeyboard(lead?.start_param ?? null),
     )
     return
   }

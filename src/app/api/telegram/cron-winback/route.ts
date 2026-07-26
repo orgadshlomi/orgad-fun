@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
       await sendMessage(
         lead.telegram_id,
         WINBACK_MESSAGE,
-        offerKeyboard(lead.start_param, lead.telegram_id),
+        offerKeyboard(lead.start_param),
       )
     } catch (err) {
       // sendMessage already swallows HTTP-level failures internally; this
