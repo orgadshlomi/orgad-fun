@@ -25,7 +25,7 @@ describe('buildCheckoutUrl', () => {
   it('builds a UTM-tagged checkout URL from a start param', () => {
     const url = buildCheckoutUrl('tgads_w1')
     expect(url).toBe(
-      'https://getleveraged.com/crypto/?utm_source=telegram&utm_medium=paid-social&utm_campaign=crypto-tg-test&utm_content=tgads_w1',
+      'https://getleveraged.com/crypto/?sl=telegram&utm_medium=paid-social&utm_campaign=crypto-tg-test&utm_content=tgads_w1',
     )
   })
 
