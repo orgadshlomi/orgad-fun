@@ -8,10 +8,10 @@ const CHECKOUT_BASE_URL = process.env.CHECKOUT_BASE_URL ?? 'https://getleveraged
 
 export function buildCheckoutUrl(startParam: string | null): string {
   const params = new URLSearchParams({
-    sl: 'telegram',
     utm_medium: 'paid-social',
     utm_campaign: 'crypto-tg-test',
     utm_content: startParam ?? 'organic',
+    sl: 'telegram',
   })
   return `${CHECKOUT_BASE_URL}?${params.toString()}`
 }
