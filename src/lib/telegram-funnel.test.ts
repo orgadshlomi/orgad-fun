@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import {
   parseStartParam,
   buildCheckoutUrl,
+  buildTrackedCheckoutUrl,
+  offerKeyboard,
   isWinbackEligible,
   isValidWebhookSecret,
   isValidCronSecret,
@@ -32,6 +34,41 @@ describe('buildCheckoutUrl', () => {
   it('falls back to "organic" content tag when there is no start param', () => {
     const url = buildCheckoutUrl(null)
     expect(url).toContain('utm_content=organic')
+  })
+
+  it('puts sl last so getleveraged.com does not strip the UTMs', () => {
+    const url = buildCheckoutUrl('tgads_price')
+    expect(url.endsWith('&sl=telegram')).toBe(true)
+  })
+})
+
+describe('buildTrackedCheckoutUrl', () => {
+  it('builds a short tracking hop carrying the telegram id and start param', () => {
+    expect(buildTrackedCheckoutUrl(8766903940, 'tgads_price')).toBe(
+      'https://getleveraged.vercel.app/g?t=8766903940&s=tgads_price',
+    )
+  })
+
+  it('omits the start param entirely when there is none', () => {
+    expect(buildTrackedCheckoutUrl(123, null)).toBe(
+      'https://getleveraged.vercel.app/g?t=123',
+    )
+  })
+
+  it('exposes no UTM params, so Telegram\'s link dialog stays short', () => {
+    const url = buildTrackedCheckoutUrl(123, 'tgads_bridge')
+    expect(url).not.toContain('utm_')
+    expect(url).not.toContain('sl=')
+  })
+})
+
+describe('offerKeyboard', () => {
+  it('points the CTA at the tracking hop rather than straight to checkout', () => {
+    const [[button]] = offerKeyboard(8766903940, 'tgads_curiosity')
+    expect(button.text).toBe('Start My Challenge →')
+    expect(button.url).toBe(
+      'https://getleveraged.vercel.app/g?t=8766903940&s=tgads_curiosity',
+    )
   })
 })
 

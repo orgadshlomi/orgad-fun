@@ -84,8 +84,32 @@ export function offerMessage(): string {
   ].join('\n')
 }
 
-export function offerKeyboard(startParam: string | null): InlineButton[][] {
-  return [[{ text: 'Start My Challenge →', url: buildCheckoutUrl(startParam) }]]
+// Host of the click-tracking hop. Kept in an env var so it can be moved to a
+// branded domain (e.g. go.getleveraged.com) without a code change — Telegram's
+// "Open link?" dialog shows this host, so a branded one reads better mid-purchase.
+const CLICK_TRACK_BASE_URL =
+  process.env.CLICK_TRACK_BASE_URL ?? 'https://getleveraged.vercel.app'
+
+// Deliberately terse (`/g?t=…&s=…`): Telegram's confirmation dialog shows the
+// whole URL, so the UTM set is appended server-side by the hop instead of being
+// exposed here. `s` is carried in the URL rather than re-read from the DB so the
+// redirect never depends on a database round-trip succeeding.
+export function buildTrackedCheckoutUrl(
+  telegramId: number,
+  startParam: string | null,
+): string {
+  const params = new URLSearchParams({ t: String(telegramId) })
+  if (startParam) params.set('s', startParam)
+  return `${CLICK_TRACK_BASE_URL}/g?${params.toString()}`
+}
+
+export function offerKeyboard(
+  telegramId: number,
+  startParam: string | null,
+): InlineButton[][] {
+  return [
+    [{ text: 'Start My Challenge →', url: buildTrackedCheckoutUrl(telegramId, startParam) }],
+  ]
 }
 
 export const WINBACK_MESSAGE =
