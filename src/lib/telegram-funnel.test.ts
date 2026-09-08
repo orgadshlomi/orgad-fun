@@ -24,51 +24,37 @@ describe('parseStartParam', () => {
 })
 
 describe('buildCheckoutUrl', () => {
-  it('builds a UTM-tagged checkout URL from a start param', () => {
-    const url = buildCheckoutUrl('tgads_w1')
-    expect(url).toBe(
-      'https://getleveraged.com/crypto/?utm_medium=paid-social&utm_campaign=crypto-tg-test&utm_content=tgads_w1&sl=telegram',
-    )
+  // Hyros support (07-Sep-2026): paid traffic should carry `sl` only, with no
+  // UTMs competing as a second attribution signal.
+  it('sends sl only, with no UTM params', () => {
+    expect(buildCheckoutUrl()).toBe('https://getleveraged.com/crypto/?sl=telegram')
   })
 
-  it('falls back to "organic" content tag when there is no start param', () => {
-    const url = buildCheckoutUrl(null)
-    expect(url).toContain('utm_content=organic')
-  })
-
-  it('puts sl last so getleveraged.com does not strip the UTMs', () => {
-    const url = buildCheckoutUrl('tgads_price')
-    expect(url.endsWith('&sl=telegram')).toBe(true)
+  it('carries no utm_ params at all', () => {
+    expect(buildCheckoutUrl()).not.toContain('utm_')
   })
 })
 
 describe('buildTrackedCheckoutUrl', () => {
-  it('builds a short tracking hop carrying the telegram id and start param', () => {
-    expect(buildTrackedCheckoutUrl(8766903940, 'tgads_price')).toBe(
-      'https://getleveraged.vercel.app/g?t=8766903940&s=tgads_price',
+  it('builds a minimal tracking hop carrying only the telegram id', () => {
+    expect(buildTrackedCheckoutUrl(8766903940)).toBe(
+      'https://getleveraged.vercel.app/g?t=8766903940',
     )
   })
 
-  it('omits the start param entirely when there is none', () => {
-    expect(buildTrackedCheckoutUrl(123, null)).toBe(
-      'https://getleveraged.vercel.app/g?t=123',
-    )
-  })
-
-  it('exposes no UTM params, so Telegram\'s link dialog stays short', () => {
-    const url = buildTrackedCheckoutUrl(123, 'tgads_bridge')
+  it("exposes nothing beyond the id, so Telegram's link dialog stays short", () => {
+    const url = buildTrackedCheckoutUrl(123)
     expect(url).not.toContain('utm_')
     expect(url).not.toContain('sl=')
+    expect(url).not.toContain('tgads')
   })
 })
 
 describe('offerKeyboard', () => {
   it('points the CTA at the tracking hop rather than straight to checkout', () => {
-    const [[button]] = offerKeyboard(8766903940, 'tgads_curiosity')
+    const [[button]] = offerKeyboard(8766903940)
     expect(button.text).toBe('Start My Challenge →')
-    expect(button.url).toBe(
-      'https://getleveraged.vercel.app/g?t=8766903940&s=tgads_curiosity',
-    )
+    expect(button.url).toBe('https://getleveraged.vercel.app/g?t=8766903940')
   })
 })
 

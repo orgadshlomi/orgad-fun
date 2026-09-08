@@ -6,14 +6,16 @@ export function parseStartParam(text: string): string | null {
 
 const CHECKOUT_BASE_URL = process.env.CHECKOUT_BASE_URL ?? 'https://getleveraged.com/crypto/'
 
-export function buildCheckoutUrl(startParam: string | null): string {
-  const params = new URLSearchParams({
-    utm_medium: 'paid-social',
-    utm_campaign: 'crypto-tg-test',
-    utm_content: startParam ?? 'organic',
-    sl: 'telegram',
-  })
-  return `${CHECKOUT_BASE_URL}?${params.toString()}`
+// `sl` only, no UTMs — per Hyros support (07-Sep-2026): for *paid* traffic they
+// want the bare `?sl` so attribution runs through their source layer alone,
+// without UTMs adding competing attribution signals. UTMs are their advice for
+// unpaid traffic only. Losing utm_content costs us nothing now: the per-concept
+// breakdown comes from our own `telegram_leads.start_param` via the /g hop,
+// which is more granular than Hyros could ever report anyway.
+// Single param also sidesteps the getleveraged.com redirect that strips
+// anything following `sl=`.
+export function buildCheckoutUrl(): string {
+  return `${CHECKOUT_BASE_URL}?sl=telegram`
 }
 
 const WINBACK_DAYS = 14
@@ -90,26 +92,17 @@ export function offerMessage(): string {
 const CLICK_TRACK_BASE_URL =
   process.env.CLICK_TRACK_BASE_URL ?? 'https://getleveraged.vercel.app'
 
-// Deliberately terse (`/g?t=…&s=…`): Telegram's confirmation dialog shows the
-// whole URL, so the UTM set is appended server-side by the hop instead of being
-// exposed here. `s` is carried in the URL rather than re-read from the DB so the
-// redirect never depends on a database round-trip succeeding.
-export function buildTrackedCheckoutUrl(
-  telegramId: number,
-  startParam: string | null,
-): string {
-  const params = new URLSearchParams({ t: String(telegramId) })
-  if (startParam) params.set('s', startParam)
-  return `${CLICK_TRACK_BASE_URL}/g?${params.toString()}`
+// Deliberately terse (`/g?t=…`): Telegram's confirmation dialog shows the whole
+// URL right before a purchase decision, so this carries the bare minimum. The
+// telegram id is all the hop needs — it stamps the click on that lead row, and
+// the concept is already stored there as `start_param` from /start, so it never
+// has to travel in the URL.
+export function buildTrackedCheckoutUrl(telegramId: number): string {
+  return `${CLICK_TRACK_BASE_URL}/g?t=${telegramId}`
 }
 
-export function offerKeyboard(
-  telegramId: number,
-  startParam: string | null,
-): InlineButton[][] {
-  return [
-    [{ text: 'Start My Challenge →', url: buildTrackedCheckoutUrl(telegramId, startParam) }],
-  ]
+export function offerKeyboard(telegramId: number): InlineButton[][] {
+  return [[{ text: 'Start My Challenge →', url: buildTrackedCheckoutUrl(telegramId) }]]
 }
 
 export const WINBACK_MESSAGE =
