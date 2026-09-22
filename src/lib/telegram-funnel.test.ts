@@ -3,6 +3,7 @@ import {
   parseStartParam,
   buildCheckoutUrl,
   buildTrackedCheckoutUrl,
+  offerMessage,
   offerKeyboard,
   isWinbackEligible,
   isValidWebhookSecret,
@@ -47,6 +48,19 @@ describe('buildTrackedCheckoutUrl', () => {
     expect(url).not.toContain('utm_')
     expect(url).not.toContain('sl=')
     expect(url).not.toContain('tgads')
+  })
+})
+
+describe('offerMessage', () => {
+  it('surfaces the 50%-off first-purchase code', () => {
+    expect(offerMessage()).toContain('TRYCRYPTO')
+    expect(offerMessage()).toContain('50% off')
+  })
+
+  it('still states the $8.88 entry and pay-after-you-pass terms', () => {
+    const m = offerMessage()
+    expect(m).toContain('$8.88')
+    expect(m).toContain('pay the full fee only after you pass')
   })
 })
 

@@ -51,29 +51,16 @@ export function isValidCronSecret(
 
 export type InlineButton = { text: string; callback_data?: string; url?: string }
 
-export const WELCOME_MESSAGE =
-  "Welcome to Leveraged. Quick one before we show you the Crypto Challenge: are you already trading crypto?"
+// Discount advertised on getleveraged.com/crypto/ ("50% OFF FIRST PURCHASE").
+// Surfaced in the bot because the LP was showing it while the ad and bot both
+// quoted full price - the strongest incentive in the funnel was going unused.
+export const FIRST_PURCHASE_CODE = 'TRYCRYPTO'
 
-export const Q1_KEYBOARD: InlineButton[][] = [
-  [
-    { text: 'Yes, already trading', callback_data: 'q1:yes' },
-    { text: 'Not yet', callback_data: 'q1:no' },
-  ],
-]
-
-export const Q2_MESSAGE = 'What size funded account are you aiming for?'
-
-export const Q2_KEYBOARD: InlineButton[][] = [
-  [
-    { text: '$10k', callback_data: 'q2:10k' },
-    { text: '$25k', callback_data: 'q2:25k' },
-  ],
-  [
-    { text: '$50k', callback_data: 'q2:50k' },
-    { text: '$100k+', callback_data: 'q2:100k' },
-  ],
-]
-
+// Single-message funnel (22-Sep-2026). The old flow asked two qualifying
+// questions before revealing the offer; only 29% of starts made it through to
+// the CTA. The answers (already_trading / target_size) were never used to make
+// a decision, so they were costing conversions for no return. Concept
+// attribution is unaffected - it rides on start_param, not the answers.
 export function offerMessage(): string {
   return [
     'The Leveraged Crypto Challenge: prove your edge on 100+ crypto pairs, then get funded.',
@@ -81,6 +68,8 @@ export function offerMessage(): string {
     '- Entry: $8.88, pay the full fee only after you pass',
     '- Target: 6% to get funded, up to $150k',
     '- Keep 80% of the profit split, biweekly payouts',
+    '',
+    `Use code ${FIRST_PURCHASE_CODE} for 50% off your first purchase.`,
     '',
     'Tap below to start your challenge.',
   ].join('\n')
